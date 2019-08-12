@@ -3,7 +3,7 @@ Find out the classes whose break is not enough to walk to the next class.
   
 The extension will check all class breaks in the Class Planner. If the extension find a class whose break is not enough to walk to the next class, that is (break time - walking time) <= 2min, the extension will insert a red button below the location box in the Class Planner to tip you.
   
-The red button will be ["Ori"+ weekday] (not enough time to get next class + the class on which weekday) or ["Ori"+ weekday] (not enough time to go from previous class + the class on which weekday).
+The red button will be ["Ori"+ weekday] (not enough time to get next class + the class on which weekday) or ["Dest"+ weekday] (not enough time to go from previous class + the class on which weekday).
   
 Hover over the red button will display more information about next/previous class and time/distance.
 
