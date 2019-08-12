@@ -1,0 +1,54 @@
+.hurry {
+    position: static !important;
+    float: inline-end !important;
+
+    background-color: #B30000 !important;
+    color: #FFFFFF !important;
+    font-size: 13px !important;
+
+    height: 15px !important;
+    
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+}
+
+.hurry:visited {
+    color: #FFFFFF !important;
+}
+
+.hurry:hover {
+    color: #F5FFF5 !important;
+}
+
+.hurry:link {
+    color: #FFFFFF !important;
+}
+
+.infotab {
+    height: 16px !important;
+    width: 50px !important;
+}
+
+.tabhurry {
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 100 !important;
+
+    top: 10px !important;
+    right: -10px !important;
+
+    width: 200px !important;
+
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+
+    font-style: normal !important;
+    text-align: left !important;
+
+    padding: 4px 4px 4px !important;
+    border: 2px solid #0055A6 !important;
+    border-radius: 4px !important;
+    box-shadow: 0px 0px 1px black !important;
+
+    display: none !important;
+}

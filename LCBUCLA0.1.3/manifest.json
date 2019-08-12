@@ -1,0 +1,25 @@
+{
+  "name": "Easy Class Break (UCLA)",
+  "version": "0.1.3",
+  "description": "Find out the classes whose break is not enough to walk to the next class.",
+  "icons": { "128": "icon.png" },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.my.ucla.edu/ClassPlanner/*"],
+      "css": ["content_script.css"],
+      "js": ["jquery.min.js", "content_script.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    "./distanceMat.json"
+  ],
+  "page_action": {
+    "default_icon": "icon.png"
+},
+  "manifest_version": 2,
+  "content_security_policy": "default-src 'none'; style-src 'self'; script-src 'self'; connect-src https://maps.googleapis.com; img-src https://maps.googleapis.com"
+}
