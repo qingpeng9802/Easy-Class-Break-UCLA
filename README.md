@@ -1,4 +1,6 @@
 # Easy-Class-Break-UCLA
+The Chrome extension is https://chrome.google.com/webstore/detail/easy-class-break-ucla/cinodjcaojlhljfgnmcmbfogamicehmo  
+
 Find out the classes whose break is not enough to walk to the next class.
   
 The extension will check all class breaks in the Class Planner. If the extension find a class whose break is not enough to walk to the next class, that is (break time - walking time) <= 2min, the extension will insert a red button below the location box in the Class Planner to tip you.
