@@ -1,54 +1,83 @@
+/* Red button */
 .hurry {
-    position: static !important;
-    float: inline-end !important;
+    position: static;
+    float: inline-end;
 
-    background-color: #B30000 !important;
-    color: #FFFFFF !important;
-    font-size: 13px !important;
+    background-color: #B00020;
+    color: #FFFFFF;
+    font-size: 13px;
 
-    height: 15px !important;
-    
-    padding-left: 2px !important;
-    padding-right: 2px !important;
+    border-radius: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+
 }
 
 .hurry:visited {
-    color: #FFFFFF !important;
+    color: #FFFFFF;
 }
 
 .hurry:hover {
-    color: #F5FFF5 !important;
+    color: #F5FFF5;
+    background-color: #AA0F2B;
 }
 
 .hurry:link {
-    color: #FFFFFF !important;
+    color: #FFFFFF;
 }
 
+/* Keep `infotab` container always be in the Class Planner box */
 .infotab {
-    height: 16px !important;
-    width: 50px !important;
+    height: 20px;
+    width: 50px;
 }
 
-.tabhurry {
-    box-sizing: border-box !important;
-    position: relative !important;
-    z-index: 100 !important;
+/* Info Tab */
+.tabinfo {
+    list-style-type: none;
 
-    top: 10px !important;
-    right: -10px !important;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 100;
 
-    width: 200px !important;
+    top: 12px;
+    right: -12px;
 
-    background-color: #FFFFFF !important;
-    color: #000000 !important;
+    width: 214px;
+    font-style: normal;
+    text-align: left;
 
-    font-style: normal !important;
-    text-align: left !important;
+    background-color: #FFFFFF;
+    color: #000000;
 
-    padding: 4px 4px 4px !important;
-    border: 2px solid #0055A6 !important;
-    border-radius: 4px !important;
-    box-shadow: 0px 0px 1px black !important;
+    border-radius: 4px;
+    box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.6);
 
-    display: none !important;
+    display: none;
+
+    border: solid #003B5C;
+    border-width: 1px;
+}
+
+/* Class Name line */
+#classline{
+    border-radius: 4px 4px 0px 0px;
+    padding: 8px;
+
+    border-bottom: solid 1px #e0e0e0;
+
+    background-color: #FFFFFF;
+    color: #0055A6;
+    font-size: 16px;
+}
+
+/* Info lines */
+#infoline{
+    border-radius: 0px 0px 4px 4px;
+    background-color: #FFFFFF;
+    color: #000000;
+    padding: 8px;
+    font-size: 13px;
 }

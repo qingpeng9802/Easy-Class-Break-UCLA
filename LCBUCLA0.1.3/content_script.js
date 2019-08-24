@@ -59,7 +59,7 @@ class ClassInfo {
 // The classes in box
 // [number, classtype, location, id, startTime, endTime, weekday, nextClassInd, gapTime,  walkTime, walkTistance, hurry]
 // [     0,         1,        2,  3,         4,       5,       6,            7,       8,         9,           10,    11]
-var boxClasses = [];
+let boxClasses = [];
 
 // Extract the class info from timebox
 let extractBoxClasses = function () {
@@ -80,7 +80,7 @@ let extractBoxClasses = function () {
 // The classes in plan with ID and time
 // [number, classtype, id, startTime, endTime]
 // [     0,         1,  2,         3,       4]
-var planClasses = []
+let planClasses = [];
 
 // Extract the class info from plan
 let extractPlanClasses = function () {
@@ -132,8 +132,8 @@ let extractPlanClasses = function () {
 let mapID2BoxClasses = function () {
   extractBoxClasses();
   extractPlanClasses();
-  for (var cl of boxClasses) {
-    for (var ci of planClasses) {
+  for (let cl of boxClasses) {
+    for (let ci of planClasses) {
       if (cl[0] === ci[0] && cl[1] === ci[1]) {
         // push id, startTime, endTime to classesPlan
         cl.push(ci[2], ci[3], ci[4]);
@@ -285,10 +285,14 @@ let calMinDiffOfBoxClasses = function () {
 
 // Send addressPairArr to background.js
 let requestDistance = function () {
+  boxClasses = [];
+  planClasses = [];
   // Finish preprocess `BoxClasses` #1
   // [number, classtype, location, id, startTime, endTime]
   // [     0,         1,        2,  3,         4,       5]
   mapID2BoxClasses();
+
+  addressPairArr = [];
   // Finish preprocess `BoxClasses` #2
   // [number, classtype, location, id, startTime, endTime, weekday, nextClassInd, gapTime]
   // [     0,         1,        2,  3,         4,       5        6,            7,       8]
@@ -319,7 +323,7 @@ requestDistance();
 
 //Test calling short#1
 /*
-var returnResult = [
+let returnResult = [
   [0, 0],
   [0, 0],
   [82, 97],
@@ -359,7 +363,7 @@ let s2min = function (s) {
 }
 
 let min2s = function (min) {
-  return (min * 60);
+  return Math.round(min * 60);
 }
 
 // Append the result (`walkTime`, `walkTistance`) from background.js to `boxClasses`
@@ -370,8 +374,8 @@ let appendResult = function () {
 }
 
 // Residual time (`gapTime` - `walkTime`) of tolerance
-// TODO: add a adjustment bar on the extension button
-var threshold = 2; // unit: min
+// Initial `threshold` to 2 min
+let threshold = 2; // unit: min
 
 // Append `hurry` flag to `boxClasses`
 let appendHurryFlag = function () {
@@ -392,34 +396,40 @@ let appendHurryFlag = function () {
  * @return a node of info string
  */
 let constructButtonPopupNode = function (classArr, nextclassArr, str) {
-  let infostr = str + nextclassArr[0] + ' ' + nextclassArr[1] + ' ' + nextclassArr[6] + '<br>' +
-    'BreakTime: ' + classArr[8] + 'min<br>WalkTime: ' + s2min(classArr[9]) +
-    'min<br>ResTime: ' + (s2min(min2s(classArr[8]) - classArr[9])) +
-    'min (' + (min2s(classArr[8]) - classArr[9]) + 's)<br>' +
-    'Distance: ' + m2mile(classArr[10]) + 'miles (' + classArr[10] + 'm)<br>';
+  let classstr = '<li id="classline"><b>' + str + nextclassArr[0] + ' ' + nextclassArr[1] + ' ' + nextclassArr[6] + '</b><br>' + '</li>';
+  let infostr = '<li id="infoline"><b>BreakTime: </b>' + classArr[8] + ' min<br><b>WalkTime: &nbsp&nbsp</b>' + s2min(classArr[9]) +
+    ' min<br><b>ResTime: &nbsp&nbsp&nbsp&nbsp</b>' + (s2min(min2s(classArr[8]) - classArr[9])) +
+    ' min (' + (min2s(classArr[8]) - classArr[9]) + ' s)<br>' +
+    '<b>Distance: &nbsp&nbsp&nbsp&nbsp</b>' + m2mile(classArr[10]) + ' miles (' + classArr[10] + ' m)<br></li>';
 
-  let $infoline = $('<em class=tabhurry></em>').html(infostr);
+  let $classline = $('<span></span>').html(classstr);
+  let $infoline = $('<span></span>').html(infostr);
 
-  return $infoline;
+  // Append `$classline` and `$infoline` to `$infonode` to control `tabinfo` style
+  let $infonode = $('<ul class=tabinfo></ul>')
+  $infonode.append($classline);
+  $infonode.append($infoline);
+
+  return $infonode;
 }
 
 // Add button and info to web page of Class Planner
 let showResult = function () {
-  // Listen `hover()` and change `<em></em>` display attr
+  // Listen `hover()` and change `.tabinfo <span></span>` display attr
   $(document).ready(function () {
     $(".hurry").hover(function () {
-      $(this).parent().find("em").attr('style', 'display: block !important');
+      $(this).parent().find(".tabinfo").attr('style', 'display: block !important');
     }, function () {
-      $(this).parent().find("em").attr('style', 'display: none !important');
+      $(this).parent().find(".tabinfo").attr('style', 'display: none !important');
     });
   });
 
   for (let i = 0; i < boxClasses.length; i++) {
     if (boxClasses[i][11] === 1) {
       // Search corresponding hurry class in planClasses
-      var oriHurryID = boxClasses[i][3];
-      var nextind = boxClasses[i][7];
-      var desHurryID = boxClasses[nextind][3];
+      let oriHurryID = boxClasses[i][3];
+      let nextind = boxClasses[i][7];
+      let desHurryID = boxClasses[nextind][3];
 
       for (let j = 0; j < planClasses.length; j++) {
         // Origin class is hurry
@@ -435,7 +445,7 @@ let showResult = function () {
           // Insert the color Button INTO a new <div> node (container)
           // to keep the relative position of the other nodes
           let theWeekday = boxClasses[i][6];
-          let $button = $('<a></a>').html('\nOri ' + theWeekday);
+          let $button = $('<a></a>').html('Ori ' + theWeekday);
           $button.attr({ class: "hurry", href: "javascript:;" });
           $BPNode.append($button);
 
@@ -455,7 +465,7 @@ let showResult = function () {
           $locationBox.append($BPNode);
 
           let theWeekday = boxClasses[i][6];
-          let $button = $('<a></a>').html('\nDest ' + theWeekday);
+          let $button = $('<a></a>').html('Dest ' + theWeekday);
           $button.attr({ class: "hurry", href: "javascript:;" });
           $BPNode.append($button);
 
@@ -480,12 +490,17 @@ let processandshowResult = function () {
 //processandshowResult();
 
 // Recieve the result of data from background.js
-var returnResult = [];
+let returnResult = [];
 chrome.runtime.onMessage.addListener(function (req, sender) {
   if (req.returnData !== undefined) {
+    returnResult = [];
     returnResult = req.returnData;
-    //Test
-    //console.log("Return: " + returnResult);
-    processandshowResult();
+    chrome.storage.sync.get(['varThreshold'], function (result) {
+      // Update threshold if `varThreshold` is not `undefined`
+      threshold = Object.is(result.varThreshold, undefined) ? threshold : result.varThreshold;
+      //Test
+      //console.log("Return: " + returnResult);
+      processandshowResult();
+    });
   }
 });

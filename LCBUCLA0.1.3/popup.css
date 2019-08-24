@@ -1,0 +1,155 @@
+/* Body */
+body {
+    padding-top: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 16px;
+    padding-bottom: 12px;
+    margin: 0px;
+}
+
+/* Slider Container */
+.slidercontainer {
+    padding: 0px;
+    margin: 0px;
+}
+
+/* List style */
+#parent {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* List element style */
+#parent > li {
+    display: inline-flex;
+    margin: 6px;
+}
+
+/* Title */
+#title {
+    padding-left: 6px;
+    font-size: 14px;
+    font-family: sans-serif;
+    font-weight: bold;
+    color: #003B5C;
+}
+
+/* Reset Button outer*/
+#resetbutout {
+    padding-left: 14px;
+}
+
+/* Reset Button */
+#resetbut {
+    color: #FFFFFF;
+    background-color: #2774AE;
+    border: none;
+    border-radius: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: bold;
+    box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.6)
+}
+
+#resetbut:hover {
+    background-color: #005587;
+}
+
+#resetbut:active {
+    background-color: #005587;
+}
+
+#resetbut:focus {
+    outline: none;
+}
+
+/* Input Range Box outer*/
+#inputboxout {
+    margin: 8px;
+}
+
+/* Input Range Box */
+#inputbox {
+    width: 46px;
+}
+
+/* Range Slider outer */
+#rangesliderout {
+    margin: 8px;
+}
+
+/* Range Slider */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 200px;
+    border-radius: 5px;
+    outline: none;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+/* Range Slider webkit track */
+input[type="range"]::-webkit-slider-runnable-track {
+    border: none;
+    border-radius: 1px;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(39, 116, 174, 0.4);
+}
+
+/* Range Slider webkit thumb */
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 50%;
+    height: 4px;
+    width: 4px;
+    background-color: #2774AE;
+    transform: scale(4, 4);
+}
+
+#rangesliderout:hover>input[type="range"]:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 1px rgba(39, 116, 174, 0.3);
+}
+
+/* Input Range Box */
+#inputbox {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #2774AE;
+    border-radius: 2px;
+    color: #003B5C;
+}
+
+#inputbox:focus {
+    outline: none;
+}
+
+/* Min text */
+#min {
+    padding-left: 4px;
+    position: relative;
+    bottom: 14px;
+    color: #003B5C;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+/* Max text */
+#max {
+    padding-left: 160px;
+    position: relative;
+    bottom: 14px;
+    color: #003B5C;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: bold;
+}

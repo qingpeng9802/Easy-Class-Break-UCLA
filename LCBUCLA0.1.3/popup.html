@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Popup</title>
+  <!-- Use popup.css -->
+  <link href="popup.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <!-- Slider Container -->
+  <div class="slidercontainer" id='bar'>
+    <!-- List for 2 line element -->
+    <ul id="parent">
+      <li>
+        <span id='title'>
+          <nobr>Threshold (ResTime reserved)</nobr>
+        </span>
+        <div id='resetbutout'>
+          <button value="Reset" id='resetbut'>RESET</button>
+        </div>
+      </li>
+      <li>
+        <div id="rangesliderout">
+          <input type="range" id="rangeslider" class='baritem' value="2" min="0" max="10" step="0.1">
+        </div>
+        <div id="inputboxout">
+          <input type="number" id="inputbox" data-type="range" class='baritem' value="2" min="0" max="10" step="0.1">
+        </div>
+      </li>
+    </ul>
+    <!-- Min and Max value text -->
+    <span id='min'>0 min</span>
+    <span id='max'>10 min</span>
+  </div>
+  <!-- Execute popup.js -->
+  <script src="popup.js"></script>
+</body>
+
+</html>

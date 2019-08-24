@@ -6,10 +6,10 @@
 // The return result from `requestData`
 // [duration_value, distance_value]
 // [             0,              1]
-var returnResult = [];
+let returnResult = [];
 
 // 60 elements of the addresses of the classes
-var fullList = [
+let fullList = [
   "Biomedical Sciences Research Building",
   "Boelter Hall",
   "Botany Building",
@@ -77,7 +77,7 @@ var fullList = [
 // and get the duration and distance of each address pair
 let requestData = function () {
   // Load `distanceMat.json`
-  var disMat = fetch('./distanceMat.json')
+  let disMat = fetch('./distanceMat.json')
     .then(response => response.json())
     .then((jsonArr) => {
       getDuaDis(jsonArr);
@@ -118,7 +118,7 @@ let getDuaDis = function (disMat) {
 
 //Test calling short#2
 /*
-var addrArr = [
+let addrArr = [
   ["Boelter Hall 3400", "Boelter Hall 2444"],
   ["Boelter Hall 2444", "Boelter Hall 2444"],
   ["Boelter Hall 2444", "Franz Hall 1260"],
@@ -150,17 +150,22 @@ var addrArr = [
 */
 
 // Store the tab ID of my.ucla.edu/ClassPlanner/*
-var currentTabID;
+let currentTabID;
 // The address array from contentscript.js
 // [origin, destination]
 // [     0,           1]
-var addrArr = [];
+let addrArr = [];
 
 chrome.runtime.onMessage.addListener(function (req, sender) {
   // Get the addresses pairs from contentscipt.js and request data
   if (req.address !== undefined) {
+    addrArr = [];
     addrArr = req.address;
     currentTabID = sender.tab.id;
+    // Fire the icon when message is recived
+    chrome.pageAction.show(currentTabID);
+    // Reset the `returnRestult` important to avoid repushing
+    returnResult = [];
     requestData();
     return true;
   }
