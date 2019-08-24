@@ -366,28 +366,6 @@ let min2s = function (min) {
   return Math.round(min * 60);
 }
 
-// Append the result (`walkTime`, `walkTistance`) from background.js to `boxClasses`
-let appendResult = function () {
-  returnResult.forEach(function (element, index) {
-    boxClasses[index].push(element[0], element[1]);
-  });
-}
-
-// Residual time (`gapTime` - `walkTime`) of tolerance
-// Initial `threshold` to 2 min
-let threshold = 2; // unit: min
-
-// Append `hurry` flag to `boxClasses`
-let appendHurryFlag = function () {
-  boxClasses.forEach(function (element) {
-    if ((min2s(element[8]) - element[9]) <= threshold * 60) {
-      element.push(1);
-    } else {
-      element.push(0);
-    }
-  });
-}
-
 /**
  * Construct a ButtonPopup node.
  * @param {array} classArr current class info array
@@ -396,8 +374,8 @@ let appendHurryFlag = function () {
  * @return a node of info string
  */
 let constructButtonPopupNode = function (classArr, nextclassArr, str) {
-  let classstr = '<li id="classline"><b>' + str + nextclassArr[0] + ' ' + nextclassArr[1] + ' ' + nextclassArr[6] + '</b><br>' + '</li>';
-  let infostr = '<li id="infoline"><b>BreakTime: </b>' + classArr[8] + ' min<br><b>WalkTime: &nbsp&nbsp</b>' + s2min(classArr[9]) +
+  let classstr = '<li class="classline"><b>' + str + nextclassArr[0] + ' ' + nextclassArr[1] + ' ' + nextclassArr[6] + '</b><br>' + '</li>';
+  let infostr = '<li class="infoline"><b>BreakTime: </b>' + classArr[8] + ' min<br><b>WalkTime: &nbsp&nbsp</b>' + s2min(classArr[9]) +
     ' min<br><b>ResTime: &nbsp&nbsp&nbsp&nbsp</b>' + (s2min(min2s(classArr[8]) - classArr[9])) +
     ' min (' + (min2s(classArr[8]) - classArr[9]) + ' s)<br>' +
     '<b>Distance: &nbsp&nbsp&nbsp&nbsp</b>' + m2mile(classArr[10]) + ' miles (' + classArr[10] + ' m)<br></li>';
@@ -414,78 +392,87 @@ let constructButtonPopupNode = function (classArr, nextclassArr, str) {
 }
 
 // Add button and info to web page of Class Planner
-let showResult = function () {
-  // Listen `hover()` and change `.tabinfo <span></span>` display attr
-  $(document).ready(function () {
-    $(".hurry").hover(function () {
-      $(this).parent().find(".tabinfo").attr('style', 'display: block !important');
-    }, function () {
-      $(this).parent().find(".tabinfo").attr('style', 'display: none !important');
-    });
-  });
+let showInfoButton = function (i) {
+  // Search corresponding hurry class in planClasses
+  let oriHurryID = boxClasses[i][3];
+  let nextind = boxClasses[i][7];
+  let desHurryID = boxClasses[nextind][3];
 
-  for (let i = 0; i < boxClasses.length; i++) {
-    if (boxClasses[i][11] === 1) {
-      // Search corresponding hurry class in planClasses
-      let oriHurryID = boxClasses[i][3];
-      let nextind = boxClasses[i][7];
-      let desHurryID = boxClasses[nextind][3];
+  for (let j = 0; j < planClasses.length; j++) {
+    // Origin class is hurry
+    if (planClasses[j][2] === oriHurryID) {
+      let oriModifyNodeInd = j;
+      let $locationBox = $($("td[class='centerColumn']")[oriModifyNodeInd]).next().next();
 
-      for (let j = 0; j < planClasses.length; j++) {
-        // Origin class is hurry
-        if (planClasses[j][2] === oriHurryID) {
-          let oriModifyNodeInd = j;
-          let $locationBox = $($("td[class='centerColumn']")[oriModifyNodeInd]).next().next();
+      // Create the container of ButtonPopup
+      let $BPNode = $('<div></div>');
+      $BPNode.attr({ class: "infotab" });
+      $locationBox.append($BPNode);
 
-          // Create the container of ButtonPopup
-          let $BPNode = $('<div></div>');
-          $BPNode.attr({ class: "infotab" });
-          $locationBox.append($BPNode);
+      // Insert the color Button INTO a new <div> node (container)
+      // to keep the relative position of the other nodes
+      let theWeekday = boxClasses[i][6];
+      let $button = $('<a></a>').html('Ori ' + theWeekday);
+      $button.attr({ class: "hurry", href: "javascript:;" });
+      $BPNode.append($button);
 
-          // Insert the color Button INTO a new <div> node (container)
-          // to keep the relative position of the other nodes
-          let theWeekday = boxClasses[i][6];
-          let $button = $('<a></a>').html('Ori ' + theWeekday);
-          $button.attr({ class: "hurry", href: "javascript:;" });
-          $BPNode.append($button);
+      // Insert the class info after the Button
+      let $oriInsertNode = constructButtonPopupNode(boxClasses[i], boxClasses[nextind], 'Next: ');
+      $BPNode.append($oriInsertNode);
 
-          // Insert the class info after the Button
-          let $oriInsertNode = constructButtonPopupNode(boxClasses[i], boxClasses[nextind], 'Next: ');
-          $BPNode.append($oriInsertNode);
+      continue;
+    }
+    // Destination class is hurry
+    if (planClasses[j][2] === desHurryID) {
+      let desModifyNodeInd = j;
+      let $locationBox = $($("td[class='centerColumn']")[desModifyNodeInd]).next().next();
 
-          continue;
-        }
-        // Destination class is hurry
-        if (planClasses[j][2] === desHurryID) {
-          let desModifyNodeInd = j;
-          let $locationBox = $($("td[class='centerColumn']")[desModifyNodeInd]).next().next();
+      let $BPNode = $('<div></div>');
+      $BPNode.attr({ class: "infotab" });
+      $locationBox.append($BPNode);
 
-          let $BPNode = $('<div></div>');
-          $BPNode.attr({ class: "infotab" });
-          $locationBox.append($BPNode);
+      let theWeekday = boxClasses[i][6];
+      let $button = $('<a></a>').html('Dest ' + theWeekday);
+      $button.attr({ class: "hurry", href: "javascript:;" });
+      $BPNode.append($button);
 
-          let theWeekday = boxClasses[i][6];
-          let $button = $('<a></a>').html('Dest ' + theWeekday);
-          $button.attr({ class: "hurry", href: "javascript:;" });
-          $BPNode.append($button);
+      let $desInsertNode = constructButtonPopupNode(boxClasses[i], boxClasses[i], 'Prev: ');
+      $BPNode.append($desInsertNode);
 
-          let $desInsertNode = constructButtonPopupNode(boxClasses[i], boxClasses[i], 'Prev: ');
-          $BPNode.append($desInsertNode);
-
-          continue;
-        }
-      }
-
+      continue;
     }
   }
 
 }
 
-let processandshowResult = function () {
-  appendResult();
-  appendHurryFlag();
-  showResult();
+// Residual time (`gapTime` - `walkTime`) of tolerance
+// Initial `threshold` to 2 min
+let threshold = 2; // unit: min
+
+// Append `hurry` flag to `boxClasses`
+let appendHurryFlag = function (i) {
+  if ((min2s(boxClasses[i][8]) - boxClasses[i][9]) <= threshold * 60) {
+    boxClasses[i].push(1);
+    // If the class is hurry, show the button
+    showInfoButton(i);
+  } else {
+    boxClasses[i].push(0);
+  }
 }
+
+// Append the result (`walkTime`, `walkTistance`) from background.js to `boxClasses`
+let appendResult = function () {
+  for (let i = 0; i < boxClasses.length; i++) {
+    boxClasses[i].push(returnResult[i][0], returnResult[i][1]);
+    // Check if the class is hurry and append `hurry` flag
+    appendHurryFlag(i);
+  }
+}
+
+let processAndShowResult = function () {
+  appendResult();
+}
+
 //Test calling short#2
 //processandshowResult();
 
@@ -500,7 +487,7 @@ chrome.runtime.onMessage.addListener(function (req, sender) {
       threshold = Object.is(result.varThreshold, undefined) ? threshold : result.varThreshold;
       //Test
       //console.log("Return: " + returnResult);
-      processandshowResult();
+      processAndShowResult();
     });
   }
 });

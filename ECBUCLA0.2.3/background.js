@@ -77,7 +77,7 @@ let fullList = [
 // and get the duration and distance of each address pair
 let requestData = function () {
   // Load `distanceMat.json`
-  let disMat = fetch('./distanceMat.json')
+  fetch('./distanceMat.json')
     .then(response => response.json())
     .then((jsonArr) => {
       getDuaDis(jsonArr);
@@ -89,27 +89,28 @@ let requestData = function () {
 // Find the index of the address string in the `fullList`
 let findIndexofFullList = function (addrStr) {
   let indexofFullList = -1;
-  fullList.forEach(function (element, index) {
-    if (addrStr.includes(element)) {
-      indexofFullList = index;
+  for (let i = 0; i < fullList.length; i++) {
+    if (addrStr.includes(fullList[i])) {
+      indexofFullList = i;
+      return indexofFullList;
     }
-  });
-  return indexofFullList;
+  }
+  return -1;
 }
 
 // Get the duaration value and distance value from `disMat`
 // and push it into `returnResult`
 // and send them to contentscript.js
 let getDuaDis = function (disMat) {
-  addrArr.forEach(function (element) {
-    let oriInd = findIndexofFullList(element[0]);
-    let desInd = findIndexofFullList(element[1]);
+  for (let i = 0; i < addrArr.length; i++) {
+    let oriInd = findIndexofFullList(addrArr[i][0]);
+    let desInd = findIndexofFullList(addrArr[i][1]);
     if (oriInd === -1 || desInd === -1) {
       returnResult.push([0, 0]);
     } else {
       returnResult.push([disMat[oriInd][desInd][0], disMat[oriInd][desInd][1]]);
     }
-  });
+  }
   //Test calling short#1
   chrome.tabs.sendMessage(currentTabID, { "returnData": returnResult });
   //Test
