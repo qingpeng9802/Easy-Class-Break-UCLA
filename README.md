@@ -16,5 +16,5 @@ In a quarter, I had a discussion session in Boelter Hall, and next discussion se
 
 # Acknowledgment:
 The Chromium Authors' Mappy chrome extension  
-Inspired by Robert Ursua's Easy BruinWalk Ratings (UCLA) extension  
+Inspired by Robert Ursua and Preetham Narayanareddy's Easy BruinWalk Ratings (UCLA) extension  
 Stack Overflow's answer contributor  
