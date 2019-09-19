@@ -1,3 +1,6 @@
+// Copyright (c) 2019 Qingpeng Li. All rights reserved.
+// Author: qingpeng9802@gmail.com (Qingpeng Li).
+
 // Node of range slider
 let rangeSlider;
 // Node of range box

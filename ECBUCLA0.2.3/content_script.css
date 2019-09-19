@@ -1,3 +1,6 @@
+/* Copyright (c) 2019 Qingpeng Li. All rights reserved. */
+/* Author: qingpeng9802@gmail.com (Qingpeng Li). */
+
 /* Red button */
 .hurry {
     position: static;
@@ -61,8 +64,13 @@
     border-width: 1px;
 }
 
+/* Implement Popup */
+.hurry:hover + .tabinfo{
+    display: block;
+}
+
 /* Class Name line */
-#classline{
+.classline{
     border-radius: 4px 4px 0px 0px;
     padding: 8px;
 
@@ -74,7 +82,7 @@
 }
 
 /* Info lines */
-#infoline{
+.infoline{
     border-radius: 0px 0px 4px 4px;
     background-color: #FFFFFF;
     color: #000000;
