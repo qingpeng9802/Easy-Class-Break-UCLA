@@ -112,7 +112,12 @@ let getDuaDis = function (disMat) {
     }
   }
   //Test calling short#1
-  chrome.tabs.sendMessage(currentTabID, { "returnData": returnResult });
+  chrome.tabs.sendMessage(currentTabID, {
+    'returnData': returnResult,
+    'curBC': curBoxClasses,
+    'curPC': curPlanClasses,
+    'curT': curThreshold
+  });
   //Test
   //console.log("Request result has been sent back !!!");
 }
@@ -157,17 +162,28 @@ let currentTabID;
 // [     0,           1]
 let addrArr = [];
 
+// Current context from `content_script.js`
+let curBoxClasses;
+let curPlanClasses;
+let curThreshold;
+
 chrome.runtime.onMessage.addListener(function (req, sender) {
   // Get the addresses pairs from contentscipt.js and request data
-  if (req.address !== undefined) {
+  if (req.keyAddressPair !== undefined) {
+
+    // Save context
+    curBoxClasses = req.keyBoxClasses;
+    curPlanClasses = req.keyPlanClasses;
+    curThreshold = req.keyThreshold;
+
     addrArr = [];
-    addrArr = req.address;
+    addrArr = req.keyAddressPair;
     currentTabID = sender.tab.id;
     // Fire the icon when message is recived
     chrome.pageAction.show(currentTabID);
     // Reset the `returnRestult` important to avoid repushing
     returnResult = [];
     requestData();
-    return true;
+    
   }
 });

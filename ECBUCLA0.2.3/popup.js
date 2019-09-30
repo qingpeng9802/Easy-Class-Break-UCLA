@@ -1,6 +1,38 @@
 // Copyright (c) 2019 Qingpeng Li. All rights reserved.
 // Author: qingpeng9802@gmail.com (Qingpeng Li).
 
+'use strict'
+
+// Store the id of timer (must be global)
+let timerId;
+
+/**
+ * Debounce function implement
+ * @param {function} func The function debounced
+ * @param {number} delay The timeout for the function
+ * @param {array} args The array of args
+ * @return Debounced function
+ */
+let debounce = function (func, delay) {
+  delay = delay || 0;
+  return (...args) => {
+    if (timerId) {
+      // Cancel the funciton if there is `timerId` (reset the timer)
+      clearTimeout(timerId);
+      timerId = null;
+    }
+    // Set timeout to the function
+    timerId = setTimeout(function () {
+      func(args);
+    }, delay);
+  };
+}
+
+// Implement debounced `cslSet` function with 500ms
+let deb_cslSet = debounce((val) => {
+  chrome.storage.local.set({ 'varThreshold': val });
+}, 200);
+
 // Node of range slider
 let rangeSlider;
 // Node of range box
@@ -10,7 +42,7 @@ let rangeBox;
 let resetVal = function (e) {
   rangeSlider.value = 2;
   rangeBox.value = 2;
-  chrome.storage.sync.set({ "varThreshold": 2 });
+  deb_cslSet(2);
 }
 
 // Initial slider value and box value by storage
@@ -19,19 +51,19 @@ let main = function () {
   rangeSlider = document.getElementById('rangeslider');
   rangeBox = document.getElementById('inputbox');
 
-  chrome.storage.sync.get(['varThreshold'], function (result) {
-    let val = Object.is(result.varThreshold, undefined) ? 2 : result.varThreshold;
+  chrome.storage.local.get(['varThreshold'], function (result) {
+    let val = result.varThreshold === undefined ? 2 : result.varThreshold;
     rangeSlider.value = val;
     rangeBox.value = val;
   });
 
   rangeBox.oninput = function () {
     rangeSlider.value = this.value;
-    chrome.storage.sync.set({ "varThreshold": this.value });
+    deb_cslSet(this.value);
   }
   rangeSlider.oninput = function () {
     rangeBox.value = this.value;
-    chrome.storage.sync.set({ "varThreshold": this.value });
+    deb_cslSet(this.value);
   }
 }
 

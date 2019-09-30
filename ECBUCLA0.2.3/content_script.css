@@ -48,7 +48,7 @@
     top: 12px;
     right: -12px;
 
-    width: 214px;
+    width: 218px;
     font-style: normal;
     text-align: left;
 
@@ -88,4 +88,8 @@
     color: #000000;
     padding: 8px;
     font-size: 13px;
+}
+
+.infodata{
+    padding-left: 10px;
 }
