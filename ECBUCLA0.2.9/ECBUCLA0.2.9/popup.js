@@ -15,7 +15,7 @@ let timerId;
  */
 let debounce = function (func, delay) {
   delay = delay || 0;
-  return (...args) => {
+  return (args) => {
     if (timerId) {
       // Cancel the funciton if there is `timerId` (reset the timer)
       clearTimeout(timerId);
@@ -59,11 +59,11 @@ let main = function () {
 
   rangeBox.oninput = function () {
     rangeSlider.value = this.value;
-    deb_cslSet(this.value);
+    deb_cslSet(parseFloat(this.value));
   }
   rangeSlider.oninput = function () {
     rangeBox.value = this.value;
-    deb_cslSet(this.value);
+    deb_cslSet(parseFloat(this.value));
   }
 }
 

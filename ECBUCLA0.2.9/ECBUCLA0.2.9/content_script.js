@@ -57,7 +57,7 @@ class ClassInfo {
   }
 }
 
-let contentScript = function (firstTime) {
+let contentScript = function (isFirstTime) {
   // The classes in box
   // [number, classtype, location, id, startTime, endTime, weekday, nextClassInd, gapTime,  walkTime, walkTistance, hurry]
   // [     0,         1,        2,  3,         4,       5,       6,            7,       8,         9,           10,    11]
@@ -338,18 +338,16 @@ let contentScript = function (firstTime) {
       return;
     }
 
-    chrome.storage.local.get(['varThreshold'], function (result) {
-      // Update threshold if `varThreshold` is not `undefined`
-      threshold = result.varThreshold === undefined ? threshold : result.varThreshold;
-      // Send `addressPairArr` to background.js
-      chrome.runtime.sendMessage({
-        'keyThreshold': threshold,
-        'keyPlanClasses': planClasses,
-        'keyBoxClasses': boxClasses,
-        'keyAddressPair': addressPairArr
-      }, function () {
-        //console.log('Message has been sent successfully !!!');
-      });
+    let saveContext = [boxClasses, planClasses];
+    chrome.storage.local.set({
+      'curContext': saveContext
+    });
+
+    // Send `addressPairArr` to background.js
+    chrome.runtime.sendMessage({
+      'addressPair': addressPairArr
+    }, function () {
+      //console.log('Message has been sent successfully !!!');
     });
 
   }
@@ -516,6 +514,10 @@ let contentScript = function (firstTime) {
   }
 
   let processAndShowResult = function () {
+    //Test
+    //console.log(boxClasses);
+    //console.log(planClasses);
+    //console.log(threshold);
     appendResult();
   }
 
@@ -532,37 +534,42 @@ let contentScript = function (firstTime) {
         returnResult = [];
         returnResult = req.returnData;
 
-        // return current context and update (since the listener will be only added once)
-        boxClasses = req.curBC;
-        planClasses = req.curPC;
-        threshold = req.curT;
-        //Test
-        //console.log("Return: " + returnResult);
-        processAndShowResult();
+        // Recover current context (since the listener will be only added once)
+        chrome.storage.local.get(['curContext', 'varThreshold'], function (result) {
+          boxClasses = result.curContext[0];
+          planClasses = result.curContext[1];
+          // Update threshold if `varThreshold` is not `undefined`
+          threshold = result.varThreshold === undefined ? threshold : result.varThreshold;
+          //Test
+          //console.log("Return: " + returnResult);
+          processAndShowResult();
+        });
       }
+
     });
   }
+
+  // Detect mutation in the page
+  let pageMO = function () {
+    let MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+    let obNode = document.getElementById('ctl00_main_wrapper')
+    let observer = new MutationObserver(function (mutations) {
+      // Call when detect a mutation
+      //Test
+      //console.log(mutations);
+      $('.infotab').remove();
+      contentScript(false);
+    });
+    let config = { childList: true }
+    observer.observe(obNode, config);
+  }
+
   // Only execute above functions when first time call `contentScript()`
-  if (firstTime) {
+  if (isFirstTime) {
     croAddListener();
+    pageMO();
   }
 
 }
 
-// Detect mutation in the page
-let pageMO = function () {
-  let MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-  let obNode = document.getElementById('ctl00_main_wrapper')
-  let observer = new MutationObserver(function (mutations) {
-    // Call when detect a mutation
-    //Test
-    //console.log(mutations);
-    $('.infotab').remove();
-    contentScript(0);
-  });
-  let config = { childList: true }
-  observer.observe(obNode, config);
-}
-
-contentScript(1);
-pageMO();
+contentScript(true);
