@@ -72,6 +72,8 @@ let contentScript = function (isFirstTime) {
         // Replace <br to \n, and delete <> tags
         let arrclass = this.innerHTML.replace(/<br/gi, '\n<').replace(/<(.|\n)*?>/gi, '').split('\n');
         let trimedArr = arrclass.map(str => str.trim());
+        trimedArr[0] = trimedArr[0].toUpperCase();
+        trimedArr[1] = trimedArr[1].toUpperCase();
         //Test
         //console.log(trimedArr);
         boxClasses.push(trimedArr);
@@ -115,9 +117,9 @@ let contentScript = function (isFirstTime) {
         numPart2 = helpStr(numPart2);
 
         // push number
-        aClassInfoArr.push(numPart1 + ' ' + numPart2);
+        aClassInfoArr.push((numPart1 + ' ' + numPart2).toUpperCase());
         // push classtype
-        aClassInfoArr.push(this.innerText);
+        aClassInfoArr.push(this.innerText.toUpperCase());
         // push id
         aClassInfoArr.push($(this).attr('title').split(' ').pop());
 
@@ -545,7 +547,7 @@ let contentScript = function (isFirstTime) {
           processAndShowResult();
         });
       }
-
+      
     });
   }
 
