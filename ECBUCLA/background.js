@@ -72,6 +72,70 @@ let fullList = [
   "Young Research Library"
 ];
 
+let fullListAbbr = [
+  "BIO SCI",
+  "BOELTER",
+  "BOTANY",
+  "BOYER",
+  "BROAD",
+  "BUNCHE",
+  "CAMPBEL",
+  "COLLINS",
+  "CORNELL",
+  "COVEL",
+  "DE NEVE",
+  "DODD",
+  "ENGR IV",
+  "ENGR V",
+  "ENGR VI",
+  "ENTRPNR",
+  "FACTOR",
+  "FIELD",
+  "FOWLER",
+  "FRANZ",
+  "GEOLOGY",
+  "GOLD",
+  "GONDA",
+  "GSEIS",
+  "HAINES",
+  "HEDRICK",
+  "HERSHEY",
+  "HLTHSCI",
+  "KAPLAN",
+  "KAUFMAN",
+  "KNSY PV",
+  "KNUDSEN",
+  "KORN",
+  "LKGP",
+  "LAKRETZ",
+  "LAW",
+  "LS",
+  "MACGOWN",
+  "MCGWN E",
+  "MELNITZ",
+  "MOL SCI",
+  "MOORE",
+  "MS",
+  "NWAUD",
+  "OSTIN",
+  "PAB",
+  "PERLOFF",
+  "POWELL",
+  "PUB AFF",
+  "PUB HLT",
+  "ROLFE",
+  "ROYCE",
+  "SAC",
+  "SEMEL",
+  "SLICHTR",
+  "SMB",
+  "SPROUL",
+  "WGYOUNG",
+  "WOODEN",
+  "YRL"
+];
+
+
 
 // Request the distance matrix from json file
 // and get the duration and distance of each address pair
@@ -88,11 +152,14 @@ let requestData = function () {
 
 // Find the index of the address string in the `fullList`
 let findIndexofFullList = function (addrStr) {
-  let indexofFullList = -1;
   for (let i = 0; i < fullList.length; i++) {
     if (addrStr.includes(fullList[i])) {
-      indexofFullList = i;
-      return indexofFullList;
+      return i;
+    }
+  }
+  for (let j = 0; j < fullListAbbr.length; j++) {
+    if (addrStr.toUpperCase().includes(fullListAbbr[j])) {
+      return j;
     }
   }
   return -1;
@@ -114,6 +181,8 @@ let getDuaDis = function (disMat) {
   //Test calling short#1
   chrome.tabs.sendMessage(currentTabID, {
     'returnData': returnResult
+  }, function (response) {
+    //console.log('Response: `' + response.resp4b + '` for `returnData`' + ' has got!!!');
   });
   //Test
   //console.log("Request result has been sent back !!!");
@@ -159,7 +228,7 @@ let currentTabID;
 // [     0,           1]
 let addrArr = [];
 
-chrome.runtime.onMessage.addListener(function (req, sender) {
+chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
   // Get the addresses pairs from contentscipt.js and request data
   if (req.addressPair !== undefined) {
     addrArr = [];
@@ -170,6 +239,7 @@ chrome.runtime.onMessage.addListener(function (req, sender) {
     // Reset the `returnRestult` important to avoid repushing
     returnResult = [];
     requestData();
-    
+
+    sendResponse({ 'resp4c': 'addressPair' });
   }
 });

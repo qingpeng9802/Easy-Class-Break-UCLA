@@ -1,0 +1,309 @@
+/* Copyright (c) 2019 Qingpeng Li. All rights reserved. */
+/* Author: qingpeng9802@gmail.com (Qingpeng Li). */
+
+/* Body */
+body {
+    padding-top: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 16px;
+    padding-bottom: 12px;
+    margin: 0px;
+}
+
+/* Slider Container */
+.slidercontainer {
+    padding-left: 28px;
+    padding-bottom: 10px;
+    margin: 0px;
+    border-bottom: solid 1px #e0e0e0;
+}
+
+/* List style */
+.parent {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* List element style */
+.parent > li {
+    display: inline-flex;
+    margin: 6px;
+}
+
+/* Title */
+.title {
+    white-space: nowrap;
+    padding-left: 6px;
+    font-size: 14px;
+    font-family: sans-serif;
+    font-weight: bold;
+    color: #003B5C;
+}
+
+/* Reset Button outer*/
+.resetbutout {
+    padding-left: 30px;
+}
+
+/* Reset Button */
+#resetbut {
+    color: #FFFFFF;
+    background-color: #2774AE;
+    border: none;
+    border-radius: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: bold;
+    box-shadow: 0px 3px 10px -5px rgba(0, 0, 0);
+}
+
+#resetbut:hover {
+    background-color: #005587;
+}
+
+#resetbut:active {
+    background-color: #005587;
+}
+
+#resetbut:focus {
+    outline: none;
+}
+
+/* Input Range Box outer*/
+.inputboxout {
+    padding-left: 16px;
+    margin: 8px;
+}
+
+/* Range Slider outer */
+.rangesliderout {
+    margin: 8px;
+}
+
+/* Range Slider */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 200px;
+    border-radius: 5px;
+    outline: none;
+    -webkit-transition: 0.2s;
+    transition: opacity 0.2s;
+}
+
+/* Range Slider webkit track */
+input[type="range"]::-webkit-slider-runnable-track {
+    border: none;
+    border-radius: 2px;
+    width: 100%;
+    height: 4px;
+    background-color: rgba(39, 116, 174, 0.4);
+}
+
+/* Range Slider webkit thumb */
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 50%;
+    height: 4px;
+    width: 4px;
+    background-color: #2774AE;
+    transform: scale(4.5, 4.5);
+    box-shadow: 
+    0 2px 1px -2px rgba(0, 0, 0, 0.094),
+    0 1px 2px 0 rgba(0, 0, 0, 0.084),
+    0 0px 2px 0 rgba(0, 0, 0, 0.080);
+}
+
+.rangesliderout:hover>input[type="range"]:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 1px rgba(39, 116, 174, 0.3);
+}
+
+/* Input Range Box */
+#inputbox {
+    width: 46px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #2774AE;
+    border-radius: 2px;
+    color: #003B5C;
+}
+
+#inputbox:focus {
+    outline: none;
+}
+
+/* Min text */
+.min {
+    padding-left: 4px;
+    position: relative;
+    bottom: 4px;
+    color: #003B5C;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+/* Max text */
+.max {
+    padding-left: 160px;
+    position: relative;
+    bottom: 4px;
+    color: #003B5C;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+/* Select Switch Container */
+.selectswitchcontainer{
+    padding-left: 14px;
+    padding-bottom: 14px;
+    border-bottom: solid 1px #e0e0e0;
+}
+
+/* Select Title */
+.select{
+    white-space: nowrap;
+    padding-top: 10px;
+    font-size: 16px;
+}
+
+/* a Switch container*/
+.showbutswitch{
+    padding-top: 14px;
+    padding-left: 28px;
+}
+
+/* diable checkbox of Switch */
+.butswitch{
+    display: none;
+}
+
+/* Switch Label */
+.butswitchlabel {
+    user-select: none;
+    font-size: 14px;
+    font-weight: 600;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    padding: 0px 0px 0px 46px;
+}
+
+/* Switch Label pseudo element */
+.butswitchlabel:before, .butswitchlabel:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    transition: all 0.2s ease;
+}
+.butswitchlabel:before {
+    left: 1px;
+    width: 36px;
+    height: 14px;
+    background-color: #9E9E9E;
+    border-radius: 8px;
+}
+.butswitchlabel:after {
+    left: 1px;
+    width: 20px;
+    height: 20px;
+    background-color: #FAFAFA;
+    border-radius: 50%;
+    box-shadow: 
+    0 3px 1px -2px rgba(0, 0, 0, 0.14),
+    0 2px 2px 0 rgba(0, 0, 0, 0.098),
+    0 1px 5px 0 rgba(0, 0, 0, 0.084);
+}
+
+/* checked style for Switch Label*/
+.butswitch:checked + .butswitchlabel{
+    color: #B00020;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* checked style for Switch Label pseudo element */
+.butswitch:checked + .butswitchlabel:before {
+    background-color: rgba(178, 0, 32, 0.4);
+}
+.butswitch:checked + .butswitchlabel:after {
+    background-color: #B00020;
+    transform: translate(90%, -50%);
+}
+
+/* Summary Container */
+.summarycontainer{
+    padding-top: 20px;
+}
+
+/* Summary Title */
+.summarytitle{
+    white-space: nowrap;
+    padding-left: 14px;
+    color: #003B5C;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Summary Table Container */
+.summarytablecontainer{
+    padding-top: 4px;
+    background-color: white;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+.summarytable {
+    border-collapse: collapse;
+}
+
+.summarylegend, .summaryentry{
+    border-bottom: solid 1px #e0e0e0;
+}
+
+/* Summary Legend Entry*/
+.classleg, .infoleg{
+    font-size: 10px;
+    color: #005587;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Summary Data Entry*/
+.classdata, .summarydata{
+    font-size: 12px;
+    white-space: nowrap;
+    font-weight: 500;
+}
+.summarydata{
+    text-align: center;
+}
+
+/* Collapsible Summary Table*/
+.collapsible {
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+    border: none;
+}
+
+/* Collapsible pseudo element */
+.collapsible:after {
+    content: '\0025C0';
+    font-size: 14px;
+    color: #003B5C; 
+    float: right;
+    padding-top: 4px;
+}
+.active:after {
+    content: '\0025BC';
+}

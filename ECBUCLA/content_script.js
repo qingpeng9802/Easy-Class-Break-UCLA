@@ -73,7 +73,6 @@ let contentScript = function (isFirstTime) {
         let arrclass = this.innerHTML.replace(/<br/gi, '\n<').replace(/<(.|\n)*?>/gi, '').split('\n');
         let trimedArr = arrclass.map(str => str.trim());
         trimedArr[0] = trimedArr[0].toUpperCase();
-        trimedArr[1] = trimedArr[1].toUpperCase();
         //Test
         //console.log(trimedArr);
         boxClasses.push(trimedArr);
@@ -104,9 +103,11 @@ let contentScript = function (isFirstTime) {
         // Process the class number with 'M'
         let helpStr = function (str) {
           if (str[str.length - 1] === 'M') {
-            str = str.slice(0, -2).trim();
-            str = str.replace(/^0+/, '');
-            str = 'M' + str;
+            // replace mutiple spaces to one space
+            str = str.replace(/\s\s+/g, ' ');
+            str = str.split(' ');
+            // exchange the order of number and special letters
+            str = str[1] + str[0].replace(/^0+/, '');
           } else {
             str = str.replace(/^0+/, '');
           }
@@ -115,11 +116,10 @@ let contentScript = function (isFirstTime) {
 
         let numPart2 = $(this).attr('href').slice(startInd2 + 1, endInd2).replace(/\+/g, ' ').trim().slice(1);
         numPart2 = helpStr(numPart2);
-
         // push number
         aClassInfoArr.push((numPart1 + ' ' + numPart2).toUpperCase());
         // push classtype
-        aClassInfoArr.push(this.innerText.toUpperCase());
+        aClassInfoArr.push(this.innerText);
         // push id
         aClassInfoArr.push($(this).attr('title').split(' ').pop());
 
@@ -141,11 +141,12 @@ let contentScript = function (isFirstTime) {
     extractPlanClasses();
     for (let cl of boxClasses) {
       for (let ci of planClasses) {
-        if (cl[0] === ci[0] && cl[1] === ci[1]) {
+        if (cl[0] === ci[0] && cl[1].toUpperCase() === ci[1].toUpperCase()) {
           // push id, startTime, endTime to classesPlan
           cl.push(ci[2], ci[3], ci[4]);
           //Test
           //console.log(cl);
+          break;
         }
       }
     }
@@ -217,18 +218,12 @@ let contentScript = function (isFirstTime) {
    */
   let assignWeekday = function (number) {
     switch (number) {
-      case 0:
-        return 'M';
-      case 1:
-        return 'T';
-      case 2:
-        return 'W';
-      case 3:
-        return 'R';
-      case 4:
-        return 'F';
-      default:
-        return 'none';
+      case 0: return 'M';
+      case 1: return 'T';
+      case 2: return 'W';
+      case 3: return 'R';
+      case 4: return 'F';
+      default: return 'none';
     }
   }
 
@@ -247,6 +242,11 @@ let contentScript = function (isFirstTime) {
 
     // The weekdays
     let colnum = $('div.timebox').length;
+
+    // count the duplicated class entry by (next) tier class
+    let dupCount = 0;
+    // duplicated address pairs array (temp, merge to `addressPairArr` finally)
+    let dupAddressPairArr = [];
 
     for (let i = 0; i < colnum; i++) {
       // The number of classes of a day
@@ -269,9 +269,15 @@ let contentScript = function (isFirstTime) {
           // Check if `nextclassInd` move to end
           let finishedDay = 0;
 
-          // If there is tier class, update the nextclassInd
+          // If there is tier class, move the number `nextclassInd` to find correct C0-C3 matching
+          //
+          //      C0* -> C1 -> C2
+          //          \
+          //             C3*
+          //
           while (minDiff(boxClasses[index][5], boxClasses[nextclassInd][4]) <= 0) {
             // Check if `nextclassInd` move to the end of the day
+            // That is, the last class of the day is still tier class, not next classs
             if (nextclassInd >= lastclassInd) {
               // Last class of the day
               boxClasses[index].push(assignWeekday(i));
@@ -297,23 +303,50 @@ let contentScript = function (isFirstTime) {
 
             // Construct a addressPairArr
             addressPairArr.push([boxClasses[index][2], boxClasses[nextclassInd][2]]);
-          }
-        }
 
+            // If next classes have tier class, C0-C1 was matched before↑
+            // move the number `nextclassInd` to find the C0-C2, C0-C3 match below
+            //
+            //            C0*
+            //         /   |    \
+            //      C1 -> C2* -> C3*
+            //
+            while (nextclassInd + 1 <= lastclassInd &&
+              minDiff(boxClasses[nextclassInd][5], boxClasses[nextclassInd + 1][4]) <= 0) {
+              nextclassInd = nextclassInd + 1;
+              // Current class is `boxClasses[-1]` (deepcopy)
+              boxClasses.push(JSON.parse(JSON.stringify(boxClasses[index])));
+              // Modify `nextclassInd`, that is, `boxClasses[-1][-2]`
+
+              boxClasses[boxClasses.length - 1][7] = nextclassInd;
+              // Modify `diff`, that is, `boxClasses[-1][-1]`
+              boxClasses[boxClasses.length - 1][8] =
+                minDiff(boxClasses[boxClasses.length - 1][5], boxClasses[nextclassInd][4]);
+              // push tier class to `addressPairArr`
+              dupAddressPairArr.push([boxClasses[boxClasses.length - 1][2], boxClasses[nextclassInd][2]]);
+              dupCount++;
+              //Test
+              //console.log('dupCount: ' + dupCount);
+              //console.log(boxClasses);
+            }
+          }
+          //-------- Non-Last class of the day ---------
+        }
         index++;
+
       }
+    }
+    // Deep copy `dupAddressPairArr` to `addressPairArr`
+    for (let k = 0; k < dupAddressPairArr.length; k++) {
+      addressPairArr.push(JSON.parse(JSON.stringify(dupAddressPairArr[k])));
     }
 
     // Check if all information is inserted to `boxClasses` correctly
-    if (index !== boxClasses.length) {
-      console.log('****** ERROR: boxClasses InfoInserted != boxClasses.length ******');
+    if (index + dupCount !== boxClasses.length) {
+      console.log('****** ERROR: boxClasses InfoInserted !== boxClasses.length ******');
       return;
     }
   }
-
-  // Residual time (`gapTime` - `walkTime`) of tolerance
-  // Initial `threshold` to 2 min
-  let threshold = 2; // unit: min
 
   // Send addressPairArr to background.js
   let requestDistance = function () {
@@ -333,10 +366,14 @@ let contentScript = function (isFirstTime) {
     //console.log(boxClasses);
     //console.log(planClasses);
     calMinDiffOfBoxClasses();
-    //console.log(addressPairArr);
+    //Test
+    console.log(boxClasses);
+    //console.log(planClasses);
+    //console.log("PAIR");
+    console.log(addressPairArr);
     // Test if the address pairs are extract correctly
     if (addressPairArr.length !== boxClasses.length) {
-      console.log('****** ERROR: addressPairArr.length != boxClasses.length ******');
+      console.log('****** ERROR: addressPairArr.length !== boxClasses.length ******');
       return;
     }
 
@@ -348,8 +385,8 @@ let contentScript = function (isFirstTime) {
     // Send `addressPairArr` to background.js
     chrome.runtime.sendMessage({
       'addressPair': addressPairArr
-    }, function () {
-      //console.log('Message has been sent successfully !!!');
+    }, function (response) {
+      //console.log('Response: `' + response.resp4c + '` for `addressPair`' + ' has got!!!');
     });
 
   }
@@ -393,17 +430,9 @@ let contentScript = function (isFirstTime) {
   ]
   */
 
-  let m2mile = function (meter) {
-    return (meter / 1609.344).toFixed(2);
-  }
-
-  let s2min = function (s) {
-    return (s / 60).toFixed(2);
-  }
-
-  let min2s = function (min) {
-    return Math.round(min * 60);
-  }
+  let m2mile = function (meter) { return (meter / 1609.344).toFixed(2); }
+  let s2min = function (s) { return (s / 60).toFixed(2); }
+  let min2s = function (min) { return Math.round(min * 60); }
 
   /**
    * Construct a ButtonPopup node.
@@ -427,10 +456,10 @@ let contentScript = function (isFirstTime) {
 
     let infostr =
       '<table>' +
-      '<tr><td><b>BreakTime:</b></td>' + '<td class=infodata>' + bT + ' min<td></tr>' +
-      '<tr><td><b>WalkTime:</b></td>' + '<td class=infodata>' + wT + ' min<td></tr>' +
-      '<tr><td><b>ResTime:</b></td>' + '<td class=infodata>' + rTmin + ' min (' + rTs + ' s)<td></tr>' +
-      '<tr><td><b>Distance:</b></td>' + '<td class=infodata>' + dmile + ' miles (' + dm + ' m)<td></tr>' +
+      '<tr><td><b>BreakTime:</b></td>' + '<td class=infodata>' + bT + ' min</td></tr>' +
+      '<tr><td><b>WalkTime:</b></td>' + '<td class=infodata>' + wT + ' min</td></tr>' +
+      '<tr><td><b>ResTime:</b></td>' + '<td class=infodata>' + rTmin + ' min (' + rTs + ' s)</td></tr>' +
+      '<tr><td><b>Distance:</b></td>' + '<td class=infodata>' + dmile + ' miles (' + dm + ' m)</td></tr>' +
       '</table>';
     let infolist = $('<li></li>').html(infostr).attr({ class: 'infoline' });
 
@@ -441,6 +470,12 @@ let contentScript = function (isFirstTime) {
     return infonode;
   }
 
+
+  // If show [ori] button
+  let oriSwitch = true;
+  // If show [Dest] button
+  let destSwitch = true;
+
   // Add button and info to web page of Class Planner
   let showInfoButton = function (i) {
     // Search corresponding hurry class in planClasses
@@ -450,7 +485,7 @@ let contentScript = function (isFirstTime) {
 
     for (let j = 0; j < planClasses.length; j++) {
       // Origin class is hurry
-      if (planClasses[j][2] === oriHurryID) {
+      if (planClasses[j][2] === oriHurryID && oriSwitch) {
         let oriModifyNodeInd = j;
         let locationBox = $($("td[class='centerColumn']")[oriModifyNodeInd]).next().next();
 
@@ -471,7 +506,7 @@ let contentScript = function (isFirstTime) {
         continue;
       }
       // Destination class is hurry
-      if (planClasses[j][2] === desHurryID) {
+      if (planClasses[j][2] === desHurryID && destSwitch) {
         let desModifyNodeInd = j;
         let locationBox = $($("td[class='centerColumn']")[desModifyNodeInd]).next().next();
 
@@ -491,6 +526,11 @@ let contentScript = function (isFirstTime) {
 
   }
 
+
+  // Residual time (`gapTime` - `walkTime`) of tolerance
+  // Initial `threshold` to 2 min
+  let threshold = 2; // unit: min
+
   // Append `hurry` flag to `boxClasses`
   let appendHurryFlag = function (i) {
     if ((min2s(boxClasses[i][8]) - boxClasses[i][9]) <= threshold * 60) {
@@ -506,8 +546,10 @@ let contentScript = function (isFirstTime) {
   let appendResult = function () {
     // When a class is deleted from `boxClasses` but `returnResult` is not updated yet
     if (boxClasses.length !== returnResult.length) {
-      return
+      console.log('****** ERROR: boxClasses.length !== returnResult.length ******');
+      return;
     }
+
     for (let i = 0; i < boxClasses.length; i++) {
       boxClasses[i].push(returnResult[i][0], returnResult[i][1]);
       // Check if the class is hurry and append `hurry` flag
@@ -521,6 +563,9 @@ let contentScript = function (isFirstTime) {
     //console.log(planClasses);
     //console.log(threshold);
     appendResult();
+
+    // store `boxClasses` for `popup.js`
+    chrome.storage.local.set({ 'finalboxClasses': boxClasses });
   }
 
   //Test calling short#2
@@ -531,23 +576,27 @@ let contentScript = function (isFirstTime) {
 
   // Add a listener to recive message from `background.js`
   let croAddListener = function () {
-    chrome.runtime.onMessage.addListener(function (req, sender) {
+    chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
       if (req.returnData !== undefined) {
         returnResult = [];
         returnResult = req.returnData;
 
         // Recover current context (since the listener will be only added once)
-        chrome.storage.local.get(['curContext', 'varThreshold'], function (result) {
+        chrome.storage.local.get(['curContext', 'varThreshold', 'varOriSwi', 'varDestSwi'], function (result) {
           boxClasses = result.curContext[0];
           planClasses = result.curContext[1];
           // Update threshold if `varThreshold` is not `undefined`
           threshold = result.varThreshold === undefined ? threshold : result.varThreshold;
+          oriSwitch = result.varOriSwi === undefined ? oriSwitch : result.varOriSwi;
+          destSwitch = result.varDestSwi === undefined ? destSwitch : result.varDestSwi;
+
           //Test
           //console.log("Return: " + returnResult);
           processAndShowResult();
         });
       }
-      
+
+      sendResponse({ 'resp4b': 'returnData' });
     });
   }
 
