@@ -6,7 +6,10 @@ The extension will check all class breaks in the Class Planner. If the extension
 The red button will be ["Ori"+ weekday] (not enough time to get next class + the class on which weekday) or ["Dest"+ weekday] (not enough time to go from previous class + the class on which weekday).
 Hover over the red button will display more information about next/previous class and time/distance.
 Click the icon of the extension will pop up a window for adjusting the remaining time you want to reserve (0-10 min, 2 min is default). The reset button will reset the remaining time to default.
+Select Tip Button used to select which type tip button appears in the Class Planner.
   
+Summary table shows BreakTime, WalkTime, ResTime and Distance of every class pairs, and hurry class pair is shown in red. The triangle next to [Summary] can collapse the summary table.
+
 This Chrome extension is on https://chrome.google.com/webstore/detail/easy-class-break-ucla/cinodjcaojlhljfgnmcmbfogamicehmo
   
 * About the extension:  
@@ -16,3 +19,6 @@ In a quarter, I had a discussion session in Boelter Hall, and next discussion se
 The Chromium Authors' Mappy chrome extension  
 Inspired by Robert Ursua and Preetham Narayanareddy's Easy BruinWalk Ratings (UCLA) extension  
 Stack Overflow's answer contributor
+  
+* Disclaimer:  
+This extension uses Google Analytics to collect usage statistics to help improve user experience. If you want to opt-out of Google Analytics tracking, please visit http://tools.google.com/dlpage/gaoptout.
