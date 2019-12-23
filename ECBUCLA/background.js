@@ -3,6 +3,18 @@
 
 'use strict'
 
+// Google Analytics
+window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
+//window.ga_debug = { trace: true };
+ga('create', 'UA-154846897-1', 'auto');
+ga('set', 'checkProtocolTask', function () { });
+ga('send', 'pageview', '/_generated_background_page.html');
+(function () {
+  let ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = 'https://www.google-analytics.com/analytics.js';
+  let s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
 // The return result from `requestData`
 // [duration_value, distance_value]
 // [             0,              1]
@@ -144,9 +156,18 @@ let requestData = function () {
   fetch('./distanceMat.json')
     .then(response => response.json())
     .then((jsonArr) => {
-      getDuaDis(jsonArr);
-      //Test
-      //console.log(returnResult);
+      // Report exception to GA
+      try {
+        getDuaDis(jsonArr);
+        //Test
+        //console.log(returnResult);
+      } catch (e) {
+        console.log('****** FATAL: ' + e.message + ' ******');
+        ga('send', 'exception', {
+          'exDescription': 'getDuaDis(jsonArr): ' + e.message,
+          'exFatal': true
+        });
+      }
     });
 }
 
@@ -172,6 +193,27 @@ let getDuaDis = function (disMat) {
   for (let i = 0; i < addrArr.length; i++) {
     let oriInd = findIndexofFullList(addrArr[i][0]);
     let desInd = findIndexofFullList(addrArr[i][1]);
+
+    // Google Analytics to find unhit addresses
+    if (oriInd === -1) {
+      if (addrArr[i][0] === 'none') {
+        console.log('****** ERROR:  Origin Address should NOT be "none" ******');
+        ga('send', 'exception', {
+          'exDescription': '* oriAddr==="none" *',
+          'exFatal': true
+        });
+      }
+      ga('send', 'exception', {
+        'exDescription': addrArr[i][0],
+        'exFatal': false
+      });
+    } else if ((desInd === -1 && addrArr[i][1] !== 'none')) {
+      ga('send', 'exception', {
+        'exDescription': addrArr[i][1],
+        'exFatal': false
+      });
+    } else { }
+
     if (oriInd === -1 || desInd === -1) {
       returnResult.push([0, 0]);
     } else {
@@ -228,18 +270,58 @@ let currentTabID;
 // [     0,           1]
 let addrArr = [];
 
+// Timer for `background.js`
+//let timeBackStart;
+
 chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
+  //timeBackStart = window.performance.now();
   // Get the addresses pairs from contentscipt.js and request data
   if (req.addressPair !== undefined) {
     addrArr = [];
     addrArr = req.addressPair;
+    //Test
+    //console.log(addrArr);
     currentTabID = sender.tab.id;
     // Fire the icon when message is recived
     chrome.pageAction.show(currentTabID);
     // Reset the `returnRestult` important to avoid repushing
     returnResult = [];
+
     requestData();
 
     sendResponse({ 'resp4c': 'addressPair' });
+  }
+  //ga('send', 'timing', 'background.js', 'execute', Math.round(window.performance.now() - timeBackStart));
+});
+
+// Google Analytics for `contentscript.js`
+chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
+  if (req.mouseoverHurry === 1) {
+    ga('send', 'event', 'infoTab', 'mouseover', 'infoTab0');
+    sendResponse({});
+  }
+  if (req.mouseoutHurry !== undefined) {
+    ga('send', 'event', 'infoTab', 'mouseout', 'infoTab0', Math.round(req.mouseoutHurry));
+    sendResponse({});
+  }
+  if (req.hurryCount !== undefined) {
+    ga('set', 'dimension3', '' + req.hurryCount);
+    ga('send', 'event', 'hurryClass', 'count', 'hurryCount');
+    sendResponse({});
+  }
+  if (req.timeContent !== undefined) {
+    ga('send', 'timing', 'contentscript.js', 'execute', Math.round(req.timeContent));
+    sendResponse({});
+  }
+  if (req.pageViewContent === 1) {
+    ga('send', 'pageview', '/content_script.html');
+    sendResponse({});
+  }
+  if (req.exceptionOfc !== undefined) {
+    ga('send', 'exception', {
+      'exDescription': 'requestDistance(): ' + req.exceptionOfc,
+      'exFatal': true
+    });
+    sendResponse({});
   }
 });

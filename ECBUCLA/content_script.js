@@ -57,7 +57,15 @@ class ClassInfo {
   }
 }
 
+// Timer for `contentScript()`
+let timeContentStart;
+
 let contentScript = function (isFirstTime) {
+  timeContentStart = window.performance.now();
+
+  // Google Analytics
+  chrome.runtime.sendMessage({ 'pageViewContent': 1 });
+
   // The classes in box
   // [number, classtype, location, id, startTime, endTime, weekday, nextClassInd, gapTime,  walkTime, walkTistance, hurry]
   // [     0,         1,        2,  3,         4,       5,       6,            7,       8,         9,           10,    11]
@@ -367,10 +375,10 @@ let contentScript = function (isFirstTime) {
     //console.log(planClasses);
     calMinDiffOfBoxClasses();
     //Test
-    console.log(boxClasses);
+    //console.log(boxClasses);
     //console.log(planClasses);
     //console.log("PAIR");
-    console.log(addressPairArr);
+    //console.log(addressPairArr);
     // Test if the address pairs are extract correctly
     if (addressPairArr.length !== boxClasses.length) {
       console.log('****** ERROR: addressPairArr.length !== boxClasses.length ******');
@@ -391,7 +399,13 @@ let contentScript = function (isFirstTime) {
 
   }
 
-  requestDistance();
+  // Report exception to GA
+  try {
+    requestDistance();
+  } catch (e) {
+    console.log('****** FATAL: ' + e.message + ' ******');
+    chrome.runtime.sendMessage({ 'exceptionOfc': e.message });
+  }
 
   // ******************* Before Get Request Result Preprocessing End ***************
 
@@ -531,10 +545,14 @@ let contentScript = function (isFirstTime) {
   // Initial `threshold` to 2 min
   let threshold = 2; // unit: min
 
+  // Count the number of hurry classes
+  let hurryCount = 0;
+
   // Append `hurry` flag to `boxClasses`
   let appendHurryFlag = function (i) {
     if ((min2s(boxClasses[i][8]) - boxClasses[i][9]) <= threshold * 60) {
       boxClasses[i].push(1);
+      hurryCount++;
       // If the class is hurry, show the button
       showInfoButton(i);
     } else {
@@ -564,6 +582,23 @@ let contentScript = function (isFirstTime) {
     //console.log(threshold);
     appendResult();
 
+    // Google Analytics
+    let timeHoverStart;
+    let hurrytabs = document.getElementsByClassName('hurry');
+    for (let i = 0; i < hurrytabs.length; i++) {
+      hurrytabs[i].addEventListener("mouseover", function () {
+        timeHoverStart = window.performance.now();
+        chrome.runtime.sendMessage({ 'mouseoverHurry': 1 });
+      });
+
+      hurrytabs[i].addEventListener("mouseout", function () {
+        chrome.runtime.sendMessage({ 'mouseoutHurry': window.performance.now() - timeHoverStart });
+      });
+    }
+    chrome.runtime.sendMessage({ 'hurryCount': hurryCount }, function (response) {
+      hurryCount = 0;
+    });
+
     // store `boxClasses` for `popup.js`
     chrome.storage.local.set({ 'finalboxClasses': boxClasses });
   }
@@ -592,18 +627,29 @@ let contentScript = function (isFirstTime) {
 
           //Test
           //console.log("Return: " + returnResult);
-          processAndShowResult();
+
+          // Report exception to GA
+          try {
+            processAndShowResult();
+          } catch (e) {
+            console.log('****** FATAL: ' + e.message + ' ******');
+            chrome.runtime.sendMessage({ 'exceptionOfc': e.message });
+          }
+
         });
+        sendResponse({ 'resp4b': 'returnData' });
       }
 
-      sendResponse({ 'resp4b': 'returnData' });
+      // Google Analytics
+      chrome.runtime.sendMessage({ 'timeContent': window.performance.now() - timeContentStart });
+
     });
   }
 
   // Detect mutation in the page
   let pageMO = function () {
     let MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-    let obNode = document.getElementById('ctl00_main_wrapper')
+    let obNode = document.getElementById('ctl00_main_wrapper');
     let observer = new MutationObserver(function (mutations) {
       // Call when detect a mutation
       //Test
@@ -611,7 +657,7 @@ let contentScript = function (isFirstTime) {
       $('.infotab').remove();
       contentScript(false);
     });
-    let config = { childList: true }
+    let config = { childList: true };
     observer.observe(obNode, config);
   }
 
@@ -622,5 +668,6 @@ let contentScript = function (isFirstTime) {
   }
 
 }
+
 
 contentScript(true);

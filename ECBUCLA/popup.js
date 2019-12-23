@@ -3,6 +3,13 @@
 
 'use strict'
 
+// Google Analytics
+window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
+//window.ga_debug = { trace: true };
+ga('create', 'UA-154846897-1', 'auto');
+ga('set', 'checkProtocolTask', function () { });
+ga('send', 'pageview', '/popup.html');
+
 // Store the id of timer (must be global)
 let timerId;
 
@@ -43,9 +50,13 @@ let deb_cslSetThr = debounce((val) => {
 
 let deb_cslSetOriSwi = debounce((val) => {
   chrome.storage.local.set({ 'varOriSwi': val });
+  ga('set', 'dimension1', '' + (+oriSwitch.checked) + (+destSwitch.checked));
+  ga('send', 'event', 'Checkbox', 'check', 'OriSwitch');
 }, 300);
 let deb_cslSetDestSwi = debounce((val) => {
   chrome.storage.local.set({ 'varDestSwi': val });
+  ga('set', 'dimension1', '' + (+oriSwitch.checked) + (+destSwitch.checked));
+  ga('send', 'event', 'Checkbox', 'check', 'DestSwitch');
 }, 300);
 
 // Node of range slider
@@ -62,6 +73,8 @@ let resetVal = function (e) {
   rangeSlider.value = 2;
   rangeBox.value = 2;
   deb_cslSetThr(2);
+  ga('set', 'dimension2', '2');
+  ga('send', 'event', 'Button', 'click', 'RESETbutton');
 }
 
 // Initial slider value and box value by storage
@@ -99,6 +112,8 @@ let main = function () {
   rangeBox.onchange = function () {
     rangeSlider.value = this.value;
     deb_cslSetThr(parseFloat(this.value));
+    ga('set', 'dimension2', this.value);
+    ga('send', 'event', 'rangeBox', 'onchange', 'rangeBox0');
   }
   rangeSlider.oninput = function () {
     rangeBox.value = this.value;
@@ -106,6 +121,8 @@ let main = function () {
   rangeSlider.onchange = function () {
     rangeBox.value = this.value;
     deb_cslSetThr(parseFloat(this.value));
+    ga('set', 'dimension2', this.value);
+    ga('send', 'event', 'rangeSlider', 'onchange', 'rangeSlider0');
   }
 
   // Update storage `Tip Button Selected` for `oriSwitch` and `destSwitch`
@@ -185,6 +202,8 @@ let collapsibleSummaryTable = function () {
 
   // control show or hide summary table 
   collsign.addEventListener("click", function () {
+    ga('send', 'event', 'collsign', 'click', tablecontainer.style.display);
+
     this.classList.toggle("active");
     if (tablecontainer.style.display === "block") {
       tablecontainer.style.display = "none";
@@ -204,18 +223,45 @@ let collapsibleSummaryTable = function () {
   });
 }
 
+// Timer for `popup.js`
+//let timePopStart;
+
 // Initial adding click event to reset button and initial `main()`
 // to meet Content Security Policy (CSP)
 document.addEventListener('DOMContentLoaded', function () {
+  //timePopStart = window.performance.now();
   document.getElementById('resetbut').addEventListener('click', resetVal);
-  main();
+
+  // Report exception to GA
+  try {
+    main();
+  } catch (e) {
+    console.log('****** FATAL: ' + e.message + ' ******');
+    ga('send', 'exception', {
+      'exDescription': 'main(): ' + e.message,
+      'exFatal': true
+    });
+  }
+
   chrome.storage.local.get(['finalboxClasses'], function (result) {
     if (result.finalboxClasses === undefined) {
       finalSummary = [];
     } else {
       finalSummary = result.finalboxClasses;
-      showSummaryTable();
-      collapsibleSummaryTable();
+
+      // Report exception to GA
+      try {
+        showSummaryTable();
+        collapsibleSummaryTable();
+      } catch (e) {
+        console.log('****** FATAL: ' + e.message + ' ******');
+        ga('send', 'exception', {
+          'exDescription': 'show_OR_coll: ' + e.message,
+          'exFatal': true
+        });
+      }
+
     }
   });
+  //ga('send', 'timing', 'popup.js', 'execute', Math.round(window.performance.now() - timePopStart));
 });

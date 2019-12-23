@@ -1,6 +1,6 @@
 {
   "name": "Easy Class Break (UCLA)",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Find out the classes whose break is not enough to walk to the next class.",
   "icons": { "128": "icon.png" },
   "background": {
@@ -25,5 +25,5 @@
     "default_popup": "popup.html"
 },
   "manifest_version": 2,
-  "content_security_policy": "default-src 'none'; style-src 'self'; script-src 'self'"
+  "content_security_policy": "default-src 'self' https://www.google-analytics.com; style-src 'self'; script-src 'self' https://www.google-analytics.com"
 }
