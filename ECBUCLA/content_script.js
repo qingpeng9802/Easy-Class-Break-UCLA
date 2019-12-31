@@ -99,6 +99,13 @@ let contentScript = function (isFirstTime) {
       function () {
         let aClassInfoArr = []
 
+        // temp debug trace
+        if ($(this).attr('href') === undefined) {
+          console.log('****** `$(this).attr` is undefined ERROR ******');
+          chrome.runtime.sendMessage({ 'exceptionOfc': '`$(this).attr`: ' + e.message });
+          return;
+        }
+
         // Extract 1st part of the class number
         let startInd1 = $(this).attr('href').indexOf('='); // 67
         let endInd1 = $(this).attr('href').indexOf('&'); // 75
@@ -120,6 +127,13 @@ let contentScript = function (isFirstTime) {
             str = str.replace(/^0+/, '');
           }
           return str;
+        }
+
+        // temp debug trace
+        if ($(this).attr('href').slice(startInd2 + 1, endInd2).replace(/\+/g, ' ').trim() === undefined) {
+          console.log('****** `slice(1)` is undefined ERROR ******');
+          chrome.runtime.sendMessage({ 'exceptionOfc': '`slice(1)`: ' + e.message });
+          return;
         }
 
         let numPart2 = $(this).attr('href').slice(startInd2 + 1, endInd2).replace(/\+/g, ' ').trim().slice(1);
@@ -166,6 +180,12 @@ let contentScript = function (isFirstTime) {
    * @return The minutes from day start
    */
   let time2Min = function (timeStr) {
+    if (timeStr === undefined) {
+      console.log('****** `timeStr` is undefined ERROR ******');
+      chrome.runtime.sendMessage({ 'exceptionOfc': '`timeStr`: ' + e.message });
+      return;
+    }
+
     // TimeStrArr [HH, MM]
     let timeStrArr = timeStr.slice(0, -2).split(':');
 
