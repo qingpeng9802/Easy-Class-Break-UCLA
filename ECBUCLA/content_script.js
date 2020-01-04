@@ -102,7 +102,7 @@ let contentScript = function (isFirstTime) {
         // temp debug trace
         if ($(this).attr('href') === undefined) {
           console.log('****** `$(this).attr` is undefined ERROR ******');
-          chrome.runtime.sendMessage({ 'exceptionOfc': '`$(this).attr`: ' + e.message });
+          chrome.runtime.sendMessage({ 'exceptionOfc': '`$(this).attr` is undefined ERROR' });
           return;
         }
 
@@ -132,7 +132,7 @@ let contentScript = function (isFirstTime) {
         // temp debug trace
         if ($(this).attr('href').slice(startInd2 + 1, endInd2).replace(/\+/g, ' ').trim() === undefined) {
           console.log('****** `slice(1)` is undefined ERROR ******');
-          chrome.runtime.sendMessage({ 'exceptionOfc': '`slice(1)`: ' + e.message });
+          chrome.runtime.sendMessage({ 'exceptionOfc': '`slice(1)` is undefined ERROR' });
           return;
         }
 
@@ -182,7 +182,7 @@ let contentScript = function (isFirstTime) {
   let time2Min = function (timeStr) {
     if (timeStr === undefined) {
       console.log('****** `timeStr` is undefined ERROR ******');
-      chrome.runtime.sendMessage({ 'exceptionOfc': '`timeStr`: ' + e.message });
+      chrome.runtime.sendMessage({ 'exceptionOfc': '`timeStr` is undefined ERROR' });
       return;
     }
 
