@@ -422,7 +422,6 @@ let contentScript = function (isFirstTime) {
   // Report exception to GA
   try {
     requestDistance();
-    adasdw();
   } catch (e) {
     console.log('****** FATAL: ' + e.message + ' ******');
     chrome.runtime.sendMessage({ 'exceptionOfc': e.stack });
