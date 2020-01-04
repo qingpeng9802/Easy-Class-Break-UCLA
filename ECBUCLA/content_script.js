@@ -422,9 +422,10 @@ let contentScript = function (isFirstTime) {
   // Report exception to GA
   try {
     requestDistance();
+    adasdw();
   } catch (e) {
     console.log('****** FATAL: ' + e.message + ' ******');
-    chrome.runtime.sendMessage({ 'exceptionOfc': e.message });
+    chrome.runtime.sendMessage({ 'exceptionOfc': e.stack });
   }
 
   // ******************* Before Get Request Result Preprocessing End ***************
@@ -653,7 +654,7 @@ let contentScript = function (isFirstTime) {
             processAndShowResult();
           } catch (e) {
             console.log('****** FATAL: ' + e.message + ' ******');
-            chrome.runtime.sendMessage({ 'exceptionOfc': e.message });
+            chrome.runtime.sendMessage({ 'exceptionOfc': e.stack });
           }
 
         });

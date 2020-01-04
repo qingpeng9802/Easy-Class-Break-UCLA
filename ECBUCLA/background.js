@@ -164,7 +164,7 @@ let requestData = function () {
       } catch (e) {
         console.log('****** FATAL: ' + e.message + ' ******');
         ga('send', 'exception', {
-          'exDescription': 'getDuaDis(jsonArr): ' + e.message,
+          'exDescription': 'getDuaDis(jsonArr): ' + e.stack,
           'exFatal': true
         });
       }

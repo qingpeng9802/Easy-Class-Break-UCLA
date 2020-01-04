@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
   } catch (e) {
     console.log('****** FATAL: ' + e.message + ' ******');
     ga('send', 'exception', {
-      'exDescription': 'main(): ' + e.message,
+      'exDescription': 'main(): ' + e.stack,
       'exFatal': true
     });
   }
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } catch (e) {
         console.log('****** FATAL: ' + e.message + ' ******');
         ga('send', 'exception', {
-          'exDescription': 'show_OR_coll: ' + e.message,
+          'exDescription': 'show_OR_coll: ' + e.stack,
           'exFatal': true
         });
       }
