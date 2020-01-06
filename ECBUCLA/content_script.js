@@ -83,7 +83,10 @@ let contentScript = function (isFirstTime) {
         trimedArr[0] = trimedArr[0].toUpperCase();
         //Test
         //console.log(trimedArr);
-        boxClasses.push(trimedArr);
+        //console.log(trimedArr.length);
+        if (trimedArr.length === 3) {
+          boxClasses.push(trimedArr);
+        }
       }
     );
   }
@@ -150,7 +153,10 @@ let contentScript = function (isFirstTime) {
         aClassInfoArr.push(classTime[1].slice(0, classTime[1].indexOf('m') + 1));
         //Test
         //console.log(aClassInfoArr);
-        planClasses.push(aClassInfoArr);
+        //console.log(aClassInfoArr.length);
+        if (aClassInfoArr.length === 5) {
+          planClasses.push(aClassInfoArr);
+        }
       }
     );
   }
@@ -368,13 +374,15 @@ let contentScript = function (isFirstTime) {
             //
 
             // temp debug trace
-            if (boxClasses[nextclassInd][5] === undefined && boxClasses[nextclassInd + 1][4] === undefined) {
-              chrome.runtime.sendMessage({ 'exceptionOfc': '358 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
-            } else if (boxClasses[nextclassInd][5] === undefined) {
-              chrome.runtime.sendMessage({ 'exceptionOfc': '360 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
-            } else if (boxClasses[nextclassInd + 1][4] === undefined) {
-              chrome.runtime.sendMessage({ 'exceptionOfc': '362 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
-            } else { }
+            if (nextclassInd + 1 <= lastclassInd) {
+              if (boxClasses[nextclassInd][5] === undefined && boxClasses[nextclassInd + 1][4] === undefined) {
+                chrome.runtime.sendMessage({ 'exceptionOfc': '358 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+              } else if (boxClasses[nextclassInd][5] === undefined) {
+                chrome.runtime.sendMessage({ 'exceptionOfc': '360 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+              } else if (boxClasses[nextclassInd + 1][4] === undefined) {
+                chrome.runtime.sendMessage({ 'exceptionOfc': '362 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+              } else { }
+            }
 
             while (nextclassInd + 1 <= lastclassInd &&
               minDiff(boxClasses[nextclassInd][5], boxClasses[nextclassInd + 1][4]) <= 0) {
@@ -395,14 +403,15 @@ let contentScript = function (isFirstTime) {
               //console.log(boxClasses);
 
               // temp debug trace
-              if (boxClasses[nextclassInd][5] === undefined && boxClasses[nextclassInd + 1][4] === undefined) {
-                chrome.runtime.sendMessage({ 'exceptionOfc': '385 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
-              } else if (boxClasses[nextclassInd][5] === undefined) {
-                chrome.runtime.sendMessage({ 'exceptionOfc': '387 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
-              } else if (boxClasses[nextclassInd + 1][4] === undefined) {
-                chrome.runtime.sendMessage({ 'exceptionOfc': '389 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
-              } else { }
-
+              if (nextclassInd + 1 <= lastclassInd) {
+                if (boxClasses[nextclassInd][5] === undefined && boxClasses[nextclassInd + 1][4] === undefined) {
+                  chrome.runtime.sendMessage({ 'exceptionOfc': '385 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+                } else if (boxClasses[nextclassInd][5] === undefined) {
+                  chrome.runtime.sendMessage({ 'exceptionOfc': '387 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+                } else if (boxClasses[nextclassInd + 1][4] === undefined) {
+                  chrome.runtime.sendMessage({ 'exceptionOfc': '389 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+                } else { }
+              }
             }
           }
           //-------- Non-Last class of the day ---------
@@ -470,7 +479,7 @@ let contentScript = function (isFirstTime) {
   try {
     requestDistance();
   } catch (e) {
-    console.log('****** FATAL: ' + e.message + ' ******');
+    console.log('****** FATAL: ' + e.stack + ' ******');
     chrome.runtime.sendMessage({ 'exceptionOfc': e.stack });
   }
 
@@ -699,7 +708,7 @@ let contentScript = function (isFirstTime) {
           try {
             processAndShowResult();
           } catch (e) {
-            console.log('****** FATAL: ' + e.message + ' ******');
+            console.log('****** FATAL: ' + e.stack + ' ******');
             chrome.runtime.sendMessage({ 'exceptionOfc': e.stack });
           }
 
