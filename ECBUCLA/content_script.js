@@ -78,7 +78,7 @@ let contentScript = function (isFirstTime) {
         //Test
         //console.log(this.innerHTML);
         // Replace <br to \n, and delete <> tags
-        let arrclass = this.innerHTML.replace(/<br/gi, '\n<').replace(/<(.|\n)*?>/gi, '').split('\n');
+        let arrclass = this.innerHTML.replace(/<br/gi, '\n<').replace(/<(.|\n)*?>/gi, '').replace('amp;', '').split('\n');
         let trimedArr = arrclass.map(str => str.trim());
         trimedArr[0] = trimedArr[0].toUpperCase();
         //Test
@@ -99,17 +99,10 @@ let contentScript = function (isFirstTime) {
       function () {
         let aClassInfoArr = []
 
-        // temp debug trace
-        if ($(this).attr('href') === undefined) {
-          console.log('****** `$(this).attr` is undefined ERROR ******');
-          chrome.runtime.sendMessage({ 'exceptionOfc': '`$(this).attr` is undefined ERROR' });
-          return;
-        }
-
         // Extract 1st part of the class number
         let startInd1 = $(this).attr('href').indexOf('='); // 67
         let endInd1 = $(this).attr('href').indexOf('&'); // 75
-        let numPart1 = $(this).attr('href').slice(startInd1 + 1, endInd1).replace(/\+/g, ' ').trim();
+        let numPart1 = decodeURIComponent($(this).attr('href').slice(startInd1 + 1, endInd1).replace(/\+/g, ' ').trim());
 
         // Extract 2nd part of the class number
         let startInd2 = $(this).attr('href').indexOf('=', endInd1); // 88
@@ -117,23 +110,27 @@ let contentScript = function (isFirstTime) {
 
         // Process the class number with 'M'
         let helpStr = function (str) {
-          if (str[str.length - 1] === 'M') {
+          if (str[str.length - 1] === 'M' || str[str.length - 1] === 'C') {
             // replace mutiple spaces to one space
             str = str.replace(/\s\s+/g, ' ');
             str = str.split(' ');
             // exchange the order of number and special letters
-            str = str[1] + str[0].replace(/^0+/, '');
+            if (str.length === 1) {
+              str = str[0].replace(/^0+/, '');
+              if (str[str.length - 1] === 'M') {
+                str = 'M' + str.slice(0, -1);
+              } else if (str[str.length - 1] === 'C') {
+                str = 'M' + str.slice(0, -1);
+              } else if (str.slice(-2) === 'CM') {
+                str = 'CM' + str.slice(0, -2);
+              } else { }
+            } else {
+              str = str[1] + str[0].replace(/^0+/, '');
+            }
           } else {
             str = str.replace(/^0+/, '');
           }
           return str;
-        }
-
-        // temp debug trace
-        if ($(this).attr('href').slice(startInd2 + 1, endInd2).replace(/\+/g, ' ').trim() === undefined) {
-          console.log('****** `slice(1)` is undefined ERROR ******');
-          chrome.runtime.sendMessage({ 'exceptionOfc': '`slice(1)` is undefined ERROR' });
-          return;
         }
 
         let numPart2 = $(this).attr('href').slice(startInd2 + 1, endInd2).replace(/\+/g, ' ').trim().slice(1);
@@ -146,12 +143,13 @@ let contentScript = function (isFirstTime) {
         aClassInfoArr.push($(this).attr('title').split(' ').pop());
 
         let classTime = $(this).parent().nextAll("td[class='centerColumn']").next().text().split('-');
+
         // push startTime
-        aClassInfoArr.push(classTime[0]);
+        aClassInfoArr.push(classTime[0].slice(0, classTime[0].indexOf('m') + 1));
         // push endTime
-        aClassInfoArr.push(classTime[1]);
+        aClassInfoArr.push(classTime[1].slice(0, classTime[1].indexOf('m') + 1));
         //Test
-        //console.log(tempArr);
+        //console.log(aClassInfoArr);
         planClasses.push(aClassInfoArr);
       }
     );
@@ -163,7 +161,9 @@ let contentScript = function (isFirstTime) {
     extractPlanClasses();
     for (let cl of boxClasses) {
       for (let ci of planClasses) {
-        if (cl[0] === ci[0] && cl[1].toUpperCase() === ci[1].toUpperCase()) {
+        if (cl[0] === ci[0] &&
+          (cl[1].toUpperCase() === ci[1].toUpperCase()
+            || (cl[1].split(' ')[0].toUpperCase() === 'QUI' && ci[1].split(' ')[0].toUpperCase() === 'QIZ'))) {
           // push id, startTime, endTime to classesPlan
           cl.push(ci[2], ci[3], ci[4]);
           //Test
@@ -183,7 +183,6 @@ let contentScript = function (isFirstTime) {
     if (timeStr === undefined) {
       console.log('****** `timeStr` is undefined ERROR ******');
       chrome.runtime.sendMessage({ 'exceptionOfc': '`timeStr` is undefined ERROR' });
-      return;
     }
 
     // TimeStrArr [HH, MM]
@@ -303,6 +302,16 @@ let contentScript = function (isFirstTime) {
           //          \
           //             C3*
           //
+
+          // temp debug trace
+          if (boxClasses[index][5] === undefined && boxClasses[nextclassInd][4] === undefined) {
+            chrome.runtime.sendMessage({ 'exceptionOfc': '294 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+          } else if (boxClasses[index][5] === undefined) {
+            chrome.runtime.sendMessage({ 'exceptionOfc': '296 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+          } else if (boxClasses[nextclassInd][4] === undefined) {
+            chrome.runtime.sendMessage({ 'exceptionOfc': '298 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+          } else { }
+
           while (minDiff(boxClasses[index][5], boxClasses[nextclassInd][4]) <= 0) {
             // Check if `nextclassInd` move to the end of the day
             // That is, the last class of the day is still tier class, not next classs
@@ -318,9 +327,27 @@ let contentScript = function (isFirstTime) {
               break;
             }
             nextclassInd++;
+
+            // temp debug trace
+            if (boxClasses[index][5] === undefined && boxClasses[nextclassInd][4] === undefined) {
+              chrome.runtime.sendMessage({ 'exceptionOfc': '319 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+            } else if (boxClasses[index][5] === undefined) {
+              chrome.runtime.sendMessage({ 'exceptionOfc': '321 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+            } else if (boxClasses[nextclassInd][4] === undefined) {
+              chrome.runtime.sendMessage({ 'exceptionOfc': '323 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+            } else { }
           }
 
           if (!finishedDay) {
+            // temp debug trace
+            if (boxClasses[index][5] === undefined && boxClasses[nextclassInd][4] === undefined) {
+              chrome.runtime.sendMessage({ 'exceptionOfc': '330 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+            } else if (boxClasses[index][5] === undefined) {
+              chrome.runtime.sendMessage({ 'exceptionOfc': '332 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+            } else if (boxClasses[nextclassInd][4] === undefined) {
+              chrome.runtime.sendMessage({ 'exceptionOfc': '334 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+            } else { }
+
             let diff = minDiff(boxClasses[index][5], boxClasses[nextclassInd][4]);
 
             //Test
@@ -339,6 +366,16 @@ let contentScript = function (isFirstTime) {
             //         /   |    \
             //      C1 -> C2* -> C3*
             //
+
+            // temp debug trace
+            if (boxClasses[nextclassInd][5] === undefined && boxClasses[nextclassInd + 1][4] === undefined) {
+              chrome.runtime.sendMessage({ 'exceptionOfc': '358 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+            } else if (boxClasses[nextclassInd][5] === undefined) {
+              chrome.runtime.sendMessage({ 'exceptionOfc': '360 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+            } else if (boxClasses[nextclassInd + 1][4] === undefined) {
+              chrome.runtime.sendMessage({ 'exceptionOfc': '362 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+            } else { }
+
             while (nextclassInd + 1 <= lastclassInd &&
               minDiff(boxClasses[nextclassInd][5], boxClasses[nextclassInd + 1][4]) <= 0) {
               nextclassInd = nextclassInd + 1;
@@ -356,6 +393,16 @@ let contentScript = function (isFirstTime) {
               //Test
               //console.log('dupCount: ' + dupCount);
               //console.log(boxClasses);
+
+              // temp debug trace
+              if (boxClasses[nextclassInd][5] === undefined && boxClasses[nextclassInd + 1][4] === undefined) {
+                chrome.runtime.sendMessage({ 'exceptionOfc': '385 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+              } else if (boxClasses[nextclassInd][5] === undefined) {
+                chrome.runtime.sendMessage({ 'exceptionOfc': '387 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+              } else if (boxClasses[nextclassInd + 1][4] === undefined) {
+                chrome.runtime.sendMessage({ 'exceptionOfc': '389 ' + index + ' ' + nextclassInd + '\n' + JSON.stringify(boxClasses) });
+              } else { }
+
             }
           }
           //-------- Non-Last class of the day ---------
