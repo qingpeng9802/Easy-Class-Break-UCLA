@@ -122,10 +122,6 @@ let contentScript = function (isFirstTime) {
               str = str[0].replace(/^0+/, '');
               if (str[str.length - 1] === 'M') {
                 str = 'M' + str.slice(0, -1);
-              } else if (str[str.length - 1] === 'C') {
-                str = 'M' + str.slice(0, -1);
-              } else if (str.slice(-2) === 'CM') {
-                str = 'CM' + str.slice(0, -2);
               } else { }
             } else {
               str = str[1] + str[0].replace(/^0+/, '');
@@ -174,6 +170,11 @@ let contentScript = function (isFirstTime) {
           cl.push(ci[2], ci[3], ci[4]);
           //Test
           //console.log(cl);
+          //console.log(cl.length);
+          if (cl.length !== 6) {
+            console.log('****** mapID2BoxClasses(): cl !== 6 ERROR ******');
+            chrome.runtime.sendMessage({ 'exceptionOfc': 'mapID2BoxClasses(): cl !== 6 ERROR' });
+          }
           break;
         }
       }
@@ -447,8 +448,8 @@ let contentScript = function (isFirstTime) {
     // [     0,         1,        2,  3,         4,       5        6,            7,       8]
 
     //Test
-    //console.log(boxClasses);
-    //console.log(planClasses);
+    console.log(boxClasses);
+    console.log(planClasses);
     calMinDiffOfBoxClasses();
     //Test
     //console.log(boxClasses);
