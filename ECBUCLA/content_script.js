@@ -86,6 +86,8 @@ let contentScript = function (isFirstTime) {
         //console.log(trimedArr.length);
         if (trimedArr.length === 3) {
           boxClasses.push(trimedArr);
+        } else {
+          boxClasses.push([]);
         }
       }
     );
@@ -153,6 +155,9 @@ let contentScript = function (isFirstTime) {
         if (aClassInfoArr.length === 5) {
           planClasses.push(aClassInfoArr);
         }
+        else {
+          planClasses.push([]);
+        }
       }
     );
   }
@@ -162,6 +167,9 @@ let contentScript = function (isFirstTime) {
     extractBoxClasses();
     extractPlanClasses();
     for (let cl of boxClasses) {
+      if (cl.length === 0) {
+        continue;
+      }
       for (let ci of planClasses) {
         if (cl[0] === ci[0] &&
           (cl[1].toUpperCase() === ci[1].toUpperCase()
@@ -481,7 +489,7 @@ let contentScript = function (isFirstTime) {
     requestDistance();
   } catch (e) {
     console.log('****** FATAL: ' + e.stack + ' ******');
-    chrome.runtime.sendMessage({ 'exceptionOfc': e.stack });
+    chrome.runtime.sendMessage({ 'exceptionOfc': e.stack + '\n' + JSON.stringify(boxClasses) });
   }
 
   // ******************* Before Get Request Result Preprocessing End ***************
@@ -710,7 +718,7 @@ let contentScript = function (isFirstTime) {
             processAndShowResult();
           } catch (e) {
             console.log('****** FATAL: ' + e.stack + ' ******');
-            chrome.runtime.sendMessage({ 'exceptionOfc': e.stack });
+            chrome.runtime.sendMessage({ 'exceptionOfc': e.stack + '\n' + JSON.stringify(boxClasses) });
           }
 
         });
