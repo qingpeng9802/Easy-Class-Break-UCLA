@@ -140,6 +140,9 @@ let s2min = function (s) { return (s / 60).toFixed(2); }
 let min2s = function (min) { return Math.round(min * 60); }
 
 let constructSummaryEntry = function (currclassArr, nextclassArr) {
+  if (currclassArr[0] === 'invalid' || nextclassArr[0] === 'invalid') {
+    return 'invalid';
+  }
   // The Class Titles
   let currclassTitle = '<b>&nbsp&nbsp&nbsp&nbsp' + currclassArr[0] + ' ' + currclassArr[1] + ' ' + currclassArr[6] + '</b><br/>';
   let nextclassTitle = '<b> \u2B62 ' + nextclassArr[0] + ' ' + nextclassArr[1] + ' ' + nextclassArr[6] + '</b>';
@@ -185,7 +188,9 @@ let showSummaryTable = function () {
       continue;
     }
     let currEntry = constructSummaryEntry(finalSummary[i], finalSummary[finalSummary[i][7]]);
-    summaryTable.appendChild(currEntry);
+    if (currEntry !== 'invalid') {
+      summaryTable.appendChild(currEntry);
+    }
   }
 }
 

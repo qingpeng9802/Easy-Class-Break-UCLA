@@ -87,7 +87,7 @@ let contentScript = function (isFirstTime) {
         if (trimedArr.length === 3) {
           boxClasses.push(trimedArr);
         } else {
-          boxClasses.push([]);
+          boxClasses.push(['invalid', 'invalid', 'invalid', 'invalid', 'invalid', 'invalid']);
         }
       }
     );
@@ -143,20 +143,21 @@ let contentScript = function (isFirstTime) {
         // push id
         aClassInfoArr.push($(this).attr('title').split(' ').pop());
 
-        let classTime = $(this).parent().nextAll("td[class='centerColumn']").next().text().split('-');
+        let classTime = $(this).parent().nextAll("td[class='centerColumn']").next().text();
 
-        // push startTime
-        aClassInfoArr.push(classTime[0].slice(0, classTime[0].indexOf('m') + 1));
-        // push endTime
-        aClassInfoArr.push(classTime[1].slice(0, classTime[1].indexOf('m') + 1));
+        if (classTime !== '' && classTime !== undefined && classTime !== null) {
+          classTime = classTime.split('-');
+          // push startTime
+          aClassInfoArr.push(classTime[0].slice(0, classTime[0].indexOf('m') + 1));
+          // push endTime
+          aClassInfoArr.push(classTime[1].slice(0, classTime[1].indexOf('m') + 1));
+        }
+
         //Test
         //console.log(aClassInfoArr);
         //console.log(aClassInfoArr.length);
         if (aClassInfoArr.length === 5) {
           planClasses.push(aClassInfoArr);
-        }
-        else {
-          planClasses.push([]);
         }
       }
     );
@@ -171,9 +172,11 @@ let contentScript = function (isFirstTime) {
         continue;
       }
       for (let ci of planClasses) {
+        if (cl[1].split(' ')[0].toUpperCase() === 'QUI') {
+          cl[1] = cl[1].replace(/qui/i, 'Qiz');
+        }
         if (cl[0] === ci[0] &&
-          (cl[1].toUpperCase() === ci[1].toUpperCase()
-            || (cl[1].split(' ')[0].toUpperCase() === 'QUI' && ci[1].split(' ')[0].toUpperCase() === 'QIZ'))) {
+          (cl[1].toUpperCase() === ci[1].toUpperCase())) {
           // push id, startTime, endTime to classesPlan
           cl.push(ci[2], ci[3], ci[4]);
           //Test
@@ -195,6 +198,9 @@ let contentScript = function (isFirstTime) {
    * @return The minutes from day start
    */
   let time2Min = function (timeStr) {
+    if (timeStr === 'invalid') {
+      return 0;
+    }
     if (timeStr === undefined) {
       console.log('****** `timeStr` is undefined ERROR ******');
       chrome.runtime.sendMessage({ 'exceptionOfc': '`timeStr` is undefined ERROR' });
@@ -577,6 +583,11 @@ let contentScript = function (isFirstTime) {
 
   // Add button and info to web page of Class Planner
   let showInfoButton = function (i) {
+    // no show invalid boxClass
+    if (boxClasses[i][0] === 'invalid' || boxClasses[boxClasses[i][7]][0] === 'invalid') {
+      return;
+    }
+
     // Search corresponding hurry class in planClasses
     let oriHurryID = boxClasses[i][3];
     let nextind = boxClasses[i][7];
@@ -666,6 +677,9 @@ let contentScript = function (isFirstTime) {
     //console.log(planClasses);
     //console.log(threshold);
     appendResult();
+    //Test
+    //console.log(boxClasses);
+    //console.log(planClasses);
 
     // Google Analytics
     let timeHoverStart;
