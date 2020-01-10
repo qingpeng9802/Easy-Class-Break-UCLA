@@ -495,7 +495,7 @@ let contentScript = function (isFirstTime) {
     requestDistance();
   } catch (e) {
     console.log('****** FATAL: ' + e.stack + ' ******');
-    chrome.runtime.sendMessage({ 'exceptionOfc': e.stack + '\n' + JSON.stringify(boxClasses) });
+    chrome.runtime.sendMessage({ 'exceptionOfc': e.stack + '\n' + JSON.stringify(boxClasses) + '\n' + JSON.stringify(planClasses) });
   }
 
   // ******************* Before Get Request Result Preprocessing End ***************
