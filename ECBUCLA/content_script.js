@@ -98,6 +98,8 @@ let contentScript = function (isFirstTime) {
   // [     0,         1,  2,         3,       4]
   let planClasses = [];
 
+  let debugClasses = [];
+
   // Extract the class info from plan
   let extractPlanClasses = function () {
     $('td.section-header a').each(
@@ -158,6 +160,8 @@ let contentScript = function (isFirstTime) {
         //console.log(aClassInfoArr.length);
         if (aClassInfoArr.length === 5) {
           planClasses.push(aClassInfoArr);
+        } else {
+          debugClasses.push(aClassInfoArr);
         }
       }
     );
@@ -495,7 +499,7 @@ let contentScript = function (isFirstTime) {
     requestDistance();
   } catch (e) {
     console.log('****** FATAL: ' + e.stack + ' ******');
-    chrome.runtime.sendMessage({ 'exceptionOfc': e.stack + '\n' + JSON.stringify(boxClasses) + '\n' + JSON.stringify(planClasses) });
+    chrome.runtime.sendMessage({ 'exceptionOfc': e.stack + '\n' + JSON.stringify(boxClasses) + '\n' + JSON.stringify(planClasses) + '\n' + JSON.stringify(debugClasses) });
   }
 
   // ******************* Before Get Request Result Preprocessing End ***************
