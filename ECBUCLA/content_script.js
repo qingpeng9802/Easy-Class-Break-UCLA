@@ -186,12 +186,12 @@ let contentScript = function (isFirstTime) {
           //Test
           //console.log(cl);
           //console.log(cl.length);
-          if (cl.length !== 6) {
-            console.log('****** mapID2BoxClasses(): cl !== 6 ERROR ******');
-            chrome.runtime.sendMessage({ 'exceptionOfc': 'mapID2BoxClasses(): cl !== 6 ERROR' });
-          }
           break;
         }
+      }
+      if (cl.length !== 6) {
+        console.log('****** mapID2BoxClasses(): cl !== 6 ERROR ******');
+        chrome.runtime.sendMessage({ 'exceptionOfc': 'mapID2BoxClasses(): cl !== 6 ERROR' });
       }
     }
   }
@@ -499,7 +499,17 @@ let contentScript = function (isFirstTime) {
     requestDistance();
   } catch (e) {
     console.log('****** FATAL: ' + e.stack + ' ******');
-    chrome.runtime.sendMessage({ 'exceptionOfc': e.stack + '\n' + JSON.stringify(boxClasses) + '\n' + JSON.stringify(planClasses) + '\n' + JSON.stringify(debugClasses) });
+    let astr = [];
+    let debug = function () {
+      $('td.section-header a').each(
+        function () { astr.push($(this).attr('href')); }
+      )
+    };
+    if ($('td.section-header a').length != 0) { debug(); }
+    chrome.runtime.sendMessage({
+      'exceptionOfc': e.stack + '\n' + JSON.stringify(boxClasses) + '\n' + JSON.stringify(planClasses) + '\n' + JSON.stringify(debugClasses)
+        + $('td.section-header a').length + astr
+    });
   }
 
   // ******************* Before Get Request Result Preprocessing End ***************
