@@ -87,6 +87,8 @@ let contentScript = function (isFirstTime) {
         if (trimedArr.length === 3) {
           boxClasses.push(trimedArr);
         } else {
+          let errInfo = "Invalid: " + trimedArr.toString();
+          chrome.runtime.sendMessage({ 'exceptionOfc': errInfo + "Len: " + trimedArr.length });
           boxClasses.push(['invalid', 'invalid', 'invalid', 'invalid', 'invalid', 'invalid']);
         }
       }
@@ -187,8 +189,8 @@ let contentScript = function (isFirstTime) {
           // push id, startTime, endTime to classesPlan
           cl.push(ci[2], ci[3], ci[4]);
           //Test
-          console.log(cl);
-          console.log(cl.length);
+          //console.log(cl);
+          //console.log(cl.length);
           break;
         }
       }
