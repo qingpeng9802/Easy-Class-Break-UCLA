@@ -179,13 +179,16 @@ let contentScript = function (isFirstTime) {
         if (cl[1].split(' ')[0].toUpperCase() === 'QUI') {
           cl[1] = cl[1].replace(/qui/i, 'Qiz');
         }
+        if (cl[1].split(' ')[0].toUpperCase() === 'FIE') {
+          cl[1] = cl[1].replace(/fie/i, 'Fld');
+        }
         if (cl[0] === ci[0] &&
           (cl[1].toUpperCase() === ci[1].toUpperCase())) {
           // push id, startTime, endTime to classesPlan
           cl.push(ci[2], ci[3], ci[4]);
           //Test
-          //console.log(cl);
-          //console.log(cl.length);
+          console.log(cl);
+          console.log(cl.length);
           break;
         }
       }
