@@ -68,8 +68,8 @@ let oriSwitch;
 // Node of destSwitch
 let destSwitch;
 
-// Reset threshold to 2
-let resetVal = function (e) {
+/** Reset threshold to 2 */
+let resetVal = function () {
   rangeSlider.value = 2;
   rangeBox.value = 2;
   deb_cslSetThr(2);
@@ -77,8 +77,9 @@ let resetVal = function (e) {
   ga('send', 'event', 'Button', 'click', 'RESETbutton');
 }
 
-// Initial slider value and box value by storage
-// and bind slider value, box value and stored threshold
+/** Initial slider value and box value by storage
+  * and bind slider value, box value and stored threshold
+  */
 let main = function () {
   rangeSlider = document.getElementById('rangeslider');
   rangeBox = document.getElementById('inputbox');
@@ -231,42 +232,47 @@ let collapsibleSummaryTable = function () {
 // Timer for `popup.js`
 //let timePopStart;
 
-// Initial adding click event to reset button and initial `main()`
-// to meet Content Security Policy (CSP)
-document.addEventListener('DOMContentLoaded', function () {
-  //timePopStart = window.performance.now();
-  document.getElementById('resetbut').addEventListener('click', resetVal);
+/** Initial adding click event to reset button and initial `main()`
+  * to meet Content Security Policy (CSP)
+  */
+let initPage = function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    //timePopStart = window.performance.now();
+    document.getElementById('resetbut').addEventListener('click', resetVal);
 
-  // Report exception to GA
-  try {
-    main();
-  } catch (e) {
-    console.log('****** FATAL: ' + e.message + ' ******');
-    ga('send', 'exception', {
-      'exDescription': 'main(): ' + e.stack,
-      'exFatal': true
-    });
-  }
-
-  chrome.storage.local.get(['finalboxClasses'], function (result) {
-    if (result.finalboxClasses === undefined) {
-      finalSummary = [];
-    } else {
-      finalSummary = result.finalboxClasses;
-
-      // Report exception to GA
-      try {
-        showSummaryTable();
-        collapsibleSummaryTable();
-      } catch (e) {
-        console.log('****** FATAL: ' + e.message + ' ******');
-        ga('send', 'exception', {
-          'exDescription': 'show_OR_coll: ' + e.stack,
-          'exFatal': true
-        });
-      }
-
+    // Report exception to GA
+    try {
+      main();
+    } catch (e) {
+      console.log('****** FATAL: ' + e.message + ' ******');
+      ga('send', 'exception', {
+        'exDescription': 'main(): ' + e.stack,
+        'exFatal': true
+      });
     }
+
+    chrome.storage.local.get(['finalboxClasses'], function (result) {
+      if (result.finalboxClasses === undefined) {
+        finalSummary = [];
+      } else {
+        finalSummary = result.finalboxClasses;
+
+        // Report exception to GA
+        try {
+          showSummaryTable();
+          collapsibleSummaryTable();
+        } catch (e) {
+          console.log('****** FATAL: ' + e.message + ' ******');
+          ga('send', 'exception', {
+            'exDescription': 'show_OR_coll: ' + e.stack,
+            'exFatal': true
+          });
+        }
+
+      }
+    });
+    //ga('send', 'timing', 'popup.js', 'execute', Math.round(window.performance.now() - timePopStart));
   });
-  //ga('send', 'timing', 'popup.js', 'execute', Math.round(window.performance.now() - timePopStart));
-});
+}
+
+initPage();
