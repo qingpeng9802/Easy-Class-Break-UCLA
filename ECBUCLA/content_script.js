@@ -479,15 +479,15 @@ let contentScript = function (isFirstTime) {
   let boxClasses = extractBoxClasses();
   let planClasses = extractPlanClasses();
   //Test
-  console.log(boxClasses);
-  console.log(planClasses);
+  //console.log(boxClasses);
+  //console.log(planClasses);
 
   // Finish preprocess `BoxClasses` #1
   // [number, classtype, location, id, startTime, endTime]
   // [     0,         1,        2,  3,         4,       5]
   let mappedBoxClasses = mapIDTime2BoxClasses(boxClasses, planClasses);
   //Test
-  console.log(mappedBoxClasses);
+  //console.log(mappedBoxClasses);
 
   // Google Analytics
   chrome.runtime.sendMessage({ 'pageViewContent': 1 });
