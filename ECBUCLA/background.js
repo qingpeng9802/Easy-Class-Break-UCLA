@@ -15,13 +15,8 @@ ga('send', 'pageview', '/_generated_background_page.html');
   let s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
 
-// The return result from `requestData`
-// [duration_value, distance_value]
-// [             0,              1]
-let returnResult = [];
-
 // 60 elements of the addresses of the classes
-let fullList = [
+const fullList = [
   "Biomedical Sciences Research Building",
   "Boelter Hall",
   "Botany Building",
@@ -84,7 +79,7 @@ let fullList = [
   "Young Research Library"
 ];
 
-let fullListAbbr = [
+const fullListAbbr = [
   "BIO SCI",
   "BOELTER",
   "BOTANY",
@@ -148,19 +143,21 @@ let fullListAbbr = [
 ];
 
 
-
-// Request the distance matrix from json file
-// and get the duration and distance of each address pair
-let requestData = function () {
+/** Request the distance matrix from json file
+  * and get the duration and distance of each address pair
+  */
+let requestData = function (addrsArr, currentTabID) {
   // Load `distanceMat.json`
   fetch('./distanceMat.json')
     .then(response => response.json())
     .then((jsonArr) => {
       // Report exception to GA
       try {
-        getDuaDis(jsonArr);
+        getDuaDis(jsonArr, addrsArr, currentTabID);
+
         //Test
         //console.log(returnResult);
+
       } catch (e) {
         console.log('****** FATAL: ' + e.message + ' ******');
         ga('send', 'exception', {
@@ -171,7 +168,7 @@ let requestData = function () {
     });
 }
 
-// Find the index of the address string in the `fullList`
+/** Find the index of the address string in the `fullList` */
 let findIndexofFullList = function (addrStr) {
   for (let i = 0; i < fullList.length; i++) {
     if (addrStr.includes(fullList[i])) {
@@ -186,17 +183,23 @@ let findIndexofFullList = function (addrStr) {
   return -1;
 }
 
-// Get the duaration value and distance value from `disMat`
-// and push it into `returnResult`
-// and send them to contentscript.js
-let getDuaDis = function (disMat) {
-  for (let i = 0; i < addrArr.length; i++) {
-    let oriInd = findIndexofFullList(addrArr[i][0]);
-    let desInd = findIndexofFullList(addrArr[i][1]);
+/** Get the duaration value and distance value from `disMat`
+  * and push it into `returnResult`
+  * and send them to contentscript.js
+  */
+let getDuaDis = function (disMat, addrsArr, currentTabID) {
+  // The return result from `requestData`
+  // [duration_value, distance_value]
+  // [             0,              1]
+  let returnResult = [];
+
+  for (let i = 0; i < addrsArr.length; i++) {
+    let oriInd = findIndexofFullList(addrsArr[i][0]);
+    let desInd = findIndexofFullList(addrsArr[i][1]);
 
     // Google Analytics to find unhit addresses
     if (oriInd === -1) {
-      if (addrArr[i][0] === 'none') {
+      if (addrsArr[i][0] === 'none') {
         console.log('****** ERROR:  Origin Address should NOT be "none" ******');
         ga('send', 'exception', {
           'exDescription': '* oriAddr==="none" *',
@@ -204,12 +207,12 @@ let getDuaDis = function (disMat) {
         });
       }
       ga('send', 'exception', {
-        'exDescription': addrArr[i][0],
+        'exDescription': addrsArr[i][0],
         'exFatal': false
       });
-    } else if ((desInd === -1 && addrArr[i][1] !== 'none')) {
+    } else if ((desInd === -1 && addrsArr[i][1] !== 'none')) {
       ga('send', 'exception', {
-        'exDescription': addrArr[i][1],
+        'exDescription': addrsArr[i][1],
         'exFatal': false
       });
     } else { }
@@ -220,19 +223,21 @@ let getDuaDis = function (disMat) {
       returnResult.push([disMat[oriInd][desInd][0], disMat[oriInd][desInd][1]]);
     }
   }
+
   //Test calling short#1
   chrome.tabs.sendMessage(currentTabID, {
     'returnData': returnResult
   }, function (response) {
     //console.log('Response: `' + response.resp4b + '` for `returnData`' + ' has got!!!');
   });
+
   //Test
   //console.log("Request result has been sent back !!!");
 }
 
 //Test calling short#2
 /*
-let addrArr = [
+let addrsArr = [
   ["Boelter Hall 3400", "Boelter Hall 2444"],
   ["Boelter Hall 2444", "Boelter Hall 2444"],
   ["Boelter Hall 2444", "Franz Hall 1260"],
@@ -263,65 +268,68 @@ let addrArr = [
 ];
 */
 
-// Store the tab ID of my.ucla.edu/ClassPlanner/*
-let currentTabID;
-// The address array from contentscript.js
-// [origin, destination]
-// [     0,           1]
-let addrArr = [];
 
 // Timer for `background.js`
 //let timeBackStart;
 
-chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
-  //timeBackStart = window.performance.now();
-  // Get the addresses pairs from contentscipt.js and request data
-  if (req.addressPair !== undefined) {
-    addrArr = [];
-    addrArr = req.addressPair;
-    //Test
-    //console.log(addrArr);
-    currentTabID = sender.tab.id;
-    // Fire the icon when message is recived
-    chrome.pageAction.show(currentTabID);
-    // Reset the `returnRestult` important to avoid repushing
-    returnResult = [];
+/** Execute the background */
+let backGround = function () {
+  chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
+    //timeBackStart = window.performance.now();
+    // Get the addresses pairs from contentscipt.js and request data
+    if (req.addressPair !== undefined) {
+      // The address array from contentscript.js
+      // [origin, destination]
+      // [     0,           1]
+      let addrsArr = [];
 
-    requestData();
+      addrsArr = req.addressPair;
+      //Test
+      //console.log(addrsArr);
 
-    sendResponse({ 'resp4c': 'addressPair' });
-  }
-  //ga('send', 'timing', 'background.js', 'execute', Math.round(window.performance.now() - timeBackStart));
-});
+      // Store the tab ID of my.ucla.edu/ClassPlanner/*
+      let currentTabID = sender.tab.id;
+      // Fire the icon when message is recived
+      chrome.pageAction.show(currentTabID);
 
-// Google Analytics for `contentscript.js`
-chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
-  if (req.mouseoverHurry === 1) {
-    ga('send', 'event', 'infoTab', 'mouseover', 'infoTab0');
-    sendResponse({});
-  }
-  if (req.mouseoutHurry !== undefined) {
-    ga('send', 'event', 'infoTab', 'mouseout', 'infoTab0', Math.round(req.mouseoutHurry));
-    sendResponse({});
-  }
-  if (req.hurryCount !== undefined) {
-    ga('set', 'dimension3', '' + req.hurryCount);
-    ga('send', 'event', 'hurryClass', 'count', 'hurryCount');
-    sendResponse({});
-  }
-  if (req.timeContent !== undefined) {
-    ga('send', 'timing', 'contentscript.js', 'execute', Math.round(req.timeContent));
-    sendResponse({});
-  }
-  if (req.pageViewContent === 1) {
-    ga('send', 'pageview', '/content_script.html');
-    sendResponse({});
-  }
-  if (req.exceptionOfc !== undefined) {
-    ga('send', 'exception', {
-      'exDescription': 'requestDistance(): ' + req.exceptionOfc,
-      'exFatal': true
-    });
-    sendResponse({});
-  }
-});
+      requestData(addrsArr, currentTabID);
+
+      sendResponse({ 'resp4c': 'addressPair' });
+    }
+    //ga('send', 'timing', 'background.js', 'execute', Math.round(window.performance.now() - timeBackStart));
+  });
+
+  // Google Analytics for `contentscript.js`
+  chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
+    if (req.mouseoverHurry === 1) {
+      ga('send', 'event', 'infoTab', 'mouseover', 'infoTab0');
+      sendResponse({});
+    }
+    if (req.mouseoutHurry !== undefined) {
+      ga('send', 'event', 'infoTab', 'mouseout', 'infoTab0', Math.round(req.mouseoutHurry));
+      sendResponse({});
+    }
+    if (req.hurryCount !== undefined) {
+      ga('set', 'dimension3', '' + req.hurryCount);
+      ga('send', 'event', 'hurryClass', 'count', 'hurryCount');
+      sendResponse({});
+    }
+    if (req.timeContent !== undefined) {
+      ga('send', 'timing', 'contentscript.js', 'execute', Math.round(req.timeContent));
+      sendResponse({});
+    }
+    if (req.pageViewContent === 1) {
+      ga('send', 'pageview', '/content_script.html');
+      sendResponse({});
+    }
+    if (req.exceptionOfc !== undefined) {
+      ga('send', 'exception', {
+        'exDescription': 'requestDistance(): ' + req.exceptionOfc,
+        'exFatal': true
+      });
+      sendResponse({});
+    }
+  });
+}
+
+backGround();
