@@ -513,7 +513,7 @@ let contentScript = function (isFirstTime) {
     if ($('td.section-header a').length != 0) { debug(); }
     chrome.runtime.sendMessage({
       'exceptionOfc': e.stack + '\n' + JSON.stringify(boxClasses) + '\n' + JSON.stringify(planClasses) + '\n' + JSON.stringify(debugClasses)
-        + $('td.section-header a').length + astr
+        + $('.courseItem').length + astr
     });
   }
 
