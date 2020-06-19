@@ -692,6 +692,9 @@ let processAndShowResult = function (oriSwitch, destSwitch, boxClasses, planClas
   //console.log(planClasses);
   //console.log(threshold);
 
+  // clean old `.infotab` nodes
+  $('.infotab').remove();
+
   let hurryCount = appendResult(oriSwitch, destSwitch, boxClasses, planClasses, threshold, returnResult);
 
   //Test
@@ -764,6 +767,9 @@ let croAddListener = function () {
   });
 }
 
+/** TimeoutID (must be global) */
+let timeoutID = null;
+
 /** Detect mutation in the page */
 let pageMO = function () {
   let MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
@@ -772,8 +778,16 @@ let pageMO = function () {
     // Call when detect a mutation
     //Test
     //console.log(mutations);
-    $('.infotab').remove();
-    contentScript(false);
+
+    // Wait for finishing DOM tree reconstruct
+    if (timeoutID) {
+      clearTimeout(timeoutID);
+      timeoutID = null;
+    }
+    timeoutID = setTimeout(function () {
+      contentScript(false);
+    }, 1000);
+
   });
   let config = { childList: true };
   observer.observe(obNode, config);

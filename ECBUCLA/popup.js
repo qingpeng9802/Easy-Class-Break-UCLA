@@ -11,7 +11,7 @@ ga('set', 'checkProtocolTask', function () { });
 ga('send', 'pageview', '/popup.html');
 
 // Store the id of timer (must be global)
-let timerId;
+let timerId = null;
 
 // Raw Summary information from `content_script.js`
 let finalSummary;
