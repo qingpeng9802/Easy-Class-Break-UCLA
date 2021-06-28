@@ -1,7 +1,7 @@
-// Copyright (c) 2019 Qingpeng Li. All rights reserved.
+// Copyright (c) 2019-2021 Qingpeng Li. All rights reserved.
 // Author: qingpeng9802@gmail.com (Qingpeng Li).
 
-'use strict'
+'use strict';
 
 // Google Analytics
 window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
@@ -146,7 +146,7 @@ const fullListAbbr = [
 /** Request the distance matrix from json file
   * and get the duration and distance of each address pair
   */
-let requestData = function (addrsArr, currentTabID) {
+const requestData = function (addrsArr, currentTabID) {
   // Load `distanceMat.json`
   fetch('./distanceMat.json')
     .then(response => response.json())
@@ -166,10 +166,10 @@ let requestData = function (addrsArr, currentTabID) {
         });
       }
     });
-}
+};
 
 /** Find the index of the address string in the `fullList` */
-let findIndexofFullList = function (addrStr) {
+const findIndexofFullList = function (addrStr) {
   for (let i = 0; i < fullList.length; i++) {
     if (addrStr.includes(fullList[i])) {
       return i;
@@ -181,21 +181,21 @@ let findIndexofFullList = function (addrStr) {
     }
   }
   return -1;
-}
+};
 
-/** Get the duaration value and distance value from `disMat`
-  * and push it into `returnResult`
+/** Get the duaration value and distance value from `disMat`.
+  * Push it into `returnResult`
   * and send them to contentscript.js
   */
-let getDuaDis = function (disMat, addrsArr, currentTabID) {
+const getDuaDis = function (disMat, addrsArr, currentTabID) {
   // The return result from `requestData`
   // [duration_value, distance_value]
   // [             0,              1]
   let returnResult = [];
 
   for (let i = 0; i < addrsArr.length; i++) {
-    let oriInd = findIndexofFullList(addrsArr[i][0]);
-    let desInd = findIndexofFullList(addrsArr[i][1]);
+    const oriInd = findIndexofFullList(addrsArr[i][0]);
+    const desInd = findIndexofFullList(addrsArr[i][1]);
 
     // Google Analytics to find unhit addresses
     if (oriInd === -1) {
@@ -233,7 +233,7 @@ let getDuaDis = function (disMat, addrsArr, currentTabID) {
 
   //Test
   //console.log("Request result has been sent back !!!");
-}
+};
 
 //Test calling short#2
 /*
@@ -273,7 +273,7 @@ let addrsArr = [
 //let timeBackStart;
 
 /** Execute the background */
-let backGround = function () {
+const backGround = function () {
   chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
     //timeBackStart = window.performance.now();
     // Get the addresses pairs from contentscipt.js and request data
@@ -330,6 +330,6 @@ let backGround = function () {
       sendResponse({});
     }
   });
-}
+};
 
 backGround();

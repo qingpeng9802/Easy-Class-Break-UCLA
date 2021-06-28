@@ -1,7 +1,7 @@
-// Copyright (c) 2019 Qingpeng Li. All rights reserved.
+// Copyright (c) 2019-2021 Qingpeng Li. All rights reserved.
 // Author: qingpeng9802@gmail.com (Qingpeng Li).
 
-'use strict'
+'use strict';
 
 // Google Analytics
 window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
@@ -28,7 +28,7 @@ let height;
  * @param {array} args The array of args
  * @return Debounced function
  */
-let debounce = function (func, delay) {
+const debounce = function (func, delay) {
   delay = delay || 0;
   return (args) => {
     if (timerId) {
@@ -41,19 +41,19 @@ let debounce = function (func, delay) {
       func(args);
     }, delay);
   };
-}
+};
 
-// Implement debounced `cslSet` function with 200ms
-let deb_cslSetThr = debounce((val) => {
+// Implement debounced `cslSet` function with 300ms
+const deb_cslSetThr = debounce((val) => {
   chrome.storage.local.set({ 'varThreshold': val });
 }, 300);
 
-let deb_cslSetOriSwi = debounce((val) => {
+const deb_cslSetOriSwi = debounce((val) => {
   chrome.storage.local.set({ 'varOriSwi': val });
   ga('set', 'dimension1', '' + (+oriSwitch.checked) + (+destSwitch.checked));
   ga('send', 'event', 'Checkbox', 'check', 'OriSwitch');
 }, 300);
-let deb_cslSetDestSwi = debounce((val) => {
+const deb_cslSetDestSwi = debounce((val) => {
   chrome.storage.local.set({ 'varDestSwi': val });
   ga('set', 'dimension1', '' + (+oriSwitch.checked) + (+destSwitch.checked));
   ga('send', 'event', 'Checkbox', 'check', 'DestSwitch');
@@ -69,18 +69,18 @@ let oriSwitch;
 let destSwitch;
 
 /** Reset threshold to 2 */
-let resetVal = function () {
+const resetVal = function () {
   rangeSlider.value = 2;
   rangeBox.value = 2;
   deb_cslSetThr(2);
   ga('set', 'dimension2', '2');
   ga('send', 'event', 'Button', 'click', 'RESETbutton');
-}
+};
 
 /** Initial slider value and box value by storage
   * and bind slider value, box value and stored threshold
   */
-let main = function () {
+const main = function () {
   rangeSlider = document.getElementById('rangeslider');
   rangeBox = document.getElementById('inputbox');
   oriSwitch = document.getElementById('oris');
@@ -88,7 +88,7 @@ let main = function () {
 
   // Initial storage values
   chrome.storage.local.get(['varThreshold'], function (result) {
-    let val = result.varThreshold === undefined ? 2 : result.varThreshold;
+    const val = result.varThreshold === undefined ? 2 : result.varThreshold;
     rangeSlider.value = val;
     rangeBox.value = val;
   });
@@ -109,63 +109,63 @@ let main = function () {
   // Associate values and update storage `Threshold` for `rangeBox` and `rangeSlider`
   rangeBox.oninput = function () {
     rangeSlider.value = this.value;
-  }
+  };
   rangeBox.onchange = function () {
     rangeSlider.value = this.value;
     deb_cslSetThr(parseFloat(this.value));
     ga('set', 'dimension2', this.value);
     ga('send', 'event', 'rangeBox', 'onchange', 'rangeBox0');
-  }
+  };
   rangeSlider.oninput = function () {
     rangeBox.value = this.value;
-  }
+  };
   rangeSlider.onchange = function () {
     rangeBox.value = this.value;
     deb_cslSetThr(parseFloat(this.value));
     ga('set', 'dimension2', this.value);
     ga('send', 'event', 'rangeSlider', 'onchange', 'rangeSlider0');
-  }
+  };
 
   // Update storage `Tip Button Selected` for `oriSwitch` and `destSwitch`
   oriSwitch.onchange = function () {
     deb_cslSetOriSwi(oriSwitch.checked);
-  }
+  };
   destSwitch.onchange = function () {
     deb_cslSetDestSwi(destSwitch.checked);
-  }
+  };
 
-}
+};
 
-let m2mile = function (meter) { return (meter / 1609.344).toFixed(2); }
-let s2min = function (s) { return (s / 60).toFixed(2); }
-let min2s = function (min) { return Math.round(min * 60); }
+const m2mile = function (meter) { return (meter / 1609.344).toFixed(2); };
+const s2min = function (s) { return (s / 60).toFixed(2); };
+const min2s = function (min) { return Math.round(min * 60); };
 
-let constructSummaryEntry = function (currclassArr, nextclassArr) {
+const constructSummaryEntry = function (currclassArr, nextclassArr) {
   if (currclassArr[0] === 'invalid' || nextclassArr[0] === 'invalid') {
     return 'invalid';
   }
   // The Class Titles
-  let currclassTitle = '<b>&nbsp&nbsp&nbsp&nbsp' + currclassArr[0] + ' ' + currclassArr[1] + ' ' + currclassArr[6] + '</b><br/>';
-  let nextclassTitle = '<b> \u2B62 ' + nextclassArr[0] + ' ' + nextclassArr[1] + ' ' + nextclassArr[6] + '</b>';
-  let classTitle = document.createElement('td');
+  const currclassTitle = '<b>&nbsp&nbsp&nbsp&nbsp' + currclassArr[0] + ' ' + currclassArr[1] + ' ' + currclassArr[6] + '</b><br/>';
+  const nextclassTitle = '<b> \u2B62 ' + nextclassArr[0] + ' ' + nextclassArr[1] + ' ' + nextclassArr[6] + '</b>';
+  const classTitle = document.createElement('td');
   classTitle.className = 'classdata';
   classTitle.innerHTML = currclassTitle + nextclassTitle;
 
   // The Class Info
-  let bT = currclassArr[8];
-  let wT = s2min(currclassArr[9]);
-  let rTmin = s2min(min2s(currclassArr[8]) - currclassArr[9]);
-  let rTs = min2s(currclassArr[8]) - currclassArr[9];
-  let dmile = m2mile(currclassArr[10]);
-  let dm = currclassArr[10];
+  const bT = currclassArr[8];
+  const wT = s2min(currclassArr[9]);
+  const rTmin = s2min(min2s(currclassArr[8]) - currclassArr[9]);
+  const rTs = min2s(currclassArr[8]) - currclassArr[9];
+  const dmile = m2mile(currclassArr[10]);
+  const dm = currclassArr[10];
 
-  let summaryEntryStr =
+  const summaryEntryStr =
     '<td class=summarydata>' + bT + '</td>' +
     '<td class=summarydata>' + wT + '</td>' +
     '<td class=summarydata>' + rTmin + '<br/>(' + rTs + ')</td>' +
     '<td class=summarydata>' + dmile + '<br/>(' + dm + ')</td>';
 
-  let summaryEntry = document.createElement('tr');
+  const summaryEntry = document.createElement('tr');
   summaryEntry.className = 'summaryentry';
   summaryEntry.innerHTML = summaryEntryStr;
 
@@ -179,25 +179,25 @@ let constructSummaryEntry = function (currclassArr, nextclassArr) {
   // Insert data table behind the legend
   summaryEntry.insertBefore(classTitle, summaryEntry.firstChild);
   return summaryEntry;
-}
+};
 
-let showSummaryTable = function () {
-  let summaryTable = document.getElementsByClassName('summarytable')[0];
+const showSummaryTable = function () {
+  const summaryTable = document.getElementsByClassName('summarytable')[0];
 
   for (let i = 0; i < finalSummary.length; i++) {
     if (finalSummary[i][7] == 'none') {
       continue;
     }
-    let currEntry = constructSummaryEntry(finalSummary[i], finalSummary[finalSummary[i][7]]);
+    const currEntry = constructSummaryEntry(finalSummary[i], finalSummary[finalSummary[i][7]]);
     if (currEntry !== 'invalid') {
       summaryTable.appendChild(currEntry);
     }
   }
-}
+};
 
-let collapsibleSummaryTable = function () {
-  let tablecontainer = document.getElementsByClassName('summarytablecontainer')[0];
-  let collsign = document.getElementsByClassName('collapsible')[0];
+const collapsibleSummaryTable = function () {
+  const tablecontainer = document.getElementsByClassName('summarytablecontainer')[0];
+  const collsign = document.getElementsByClassName('collapsible')[0];
 
   // recover store state of the summary table 
   tablecontainer.style.display = foldState;
@@ -227,7 +227,7 @@ let collapsibleSummaryTable = function () {
       chrome.storage.local.set({ 'varHeight': '100%' });
     }
   });
-}
+};
 
 // Timer for `popup.js`
 //let timePopStart;
@@ -235,7 +235,7 @@ let collapsibleSummaryTable = function () {
 /** Initial adding click event to reset button and initial `main()`
   * to meet Content Security Policy (CSP)
   */
-let initPage = function () {
+const initPage = function () {
   document.addEventListener('DOMContentLoaded', function () {
     //timePopStart = window.performance.now();
     document.getElementById('resetbut').addEventListener('click', resetVal);
@@ -273,6 +273,6 @@ let initPage = function () {
     });
     //ga('send', 'timing', 'popup.js', 'execute', Math.round(window.performance.now() - timePopStart));
   });
-}
+};
 
 initPage();
