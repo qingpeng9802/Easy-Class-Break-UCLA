@@ -15,161 +15,8 @@ ga('send', 'pageview', '/_generated_background_page.html');
   let s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
 
-// 60 elements of the addresses of the classes
-const fullList = [
-  "Biomedical Sciences Research Building",
-  "Boelter Hall",
-  "Botany Building",
-  "Boyer Hall",
-  "Broad Art Center",
-  "Bunche Hall",
-  "Campbell Hall",
-  "Collins Center for Executive Education",
-  "Cornell Hall",
-  "Covel Commons",
-  "De Neve Plaza Commons Building",
-  "Dodd Hall",
-  "Engineering IV",
-  "Engineering V",
-  "Engineering VI",
-  "Entrepreneurs Hall",
-  "Factor Health Sciences Building",
-  "Field",
-  "Fowler Museum at UCLA",
-  "Franz Hall",
-  "Geology Building",
-  "Gold Hall",
-  "Gonda (Goldschmied) Neuroscience and Genetics Research Center",
-  "Graduate School of Education and Information Studies Building",
-  "Haines Hall",
-  "Hedrick Hall",
-  "Hershey Hall",
-  "Center for the Health Sciences",
-  "Kaplan Hall",
-  "Kaufman Hall",
-  "Kinsey Science Teaching Pavilion",
-  "Knudsen Hall",
-  "Korn Convocation Hall",
-  "La Kretz Garden Pavilion",
-  "La Kretz Hall",
-  "Law Building",
-  "Life Sciences",
-  "Macgowan Hall",
-  "Macgowan Hall East",
-  "Melnitz Hall",
-  "Molecular Sciences Building",
-  "Moore Hall",
-  "Mathematical Sciences",
-  "Northwest Campus Auditorium",
-  "Ostin Music Center",
-  "Physics and Astronomy Building",
-  "Perloff Hall",
-  "Powell Library Building",
-  "Public Affairs Building",
-  "Public Health, School of",
-  "Rolfe Hall",
-  "Royce Hall",
-  "Student Activities Center",
-  "Semel Institute for Neuroscience and Human Behavior",
-  "Slichter Hall",
-  "Schoenberg Music Building",
-  "Sproul Hall",
-  "Young Hall",
-  "Wooden Recreation and Sports Center",
-  "Young Research Library"
-];
-
-const fullListAbbr = [
-  "BIO SCI",
-  "BOELTER",
-  "BOTANY",
-  "BOYER",
-  "BROAD",
-  "BUNCHE",
-  "CAMPBEL",
-  "COLLINS",
-  "CORNELL",
-  "COVEL",
-  "DE NEVE",
-  "DODD",
-  "ENGR IV",
-  "ENGR V",
-  "ENGR VI",
-  "ENTRPNR",
-  "FACTOR",
-  "FIELD",
-  "FOWLER",
-  "FRANZ",
-  "GEOLOGY",
-  "GOLD",
-  "GONDA",
-  "GSEIS",
-  "HAINES",
-  "HEDRICK",
-  "HERSHEY",
-  "HLTHSCI",
-  "KAPLAN",
-  "KAUFMAN",
-  "KNSY PV",
-  "KNUDSEN",
-  "KORN",
-  "LKGP",
-  "LAKRETZ",
-  "LAW",
-  "LS",
-  "MACGOWN",
-  "MCGWN E",
-  "MELNITZ",
-  "MOL SCI",
-  "MOORE",
-  "MS",
-  "NWAUD",
-  "OSTIN",
-  "PAB",
-  "PERLOFF",
-  "POWELL",
-  "PUB AFF",
-  "PUB HLT",
-  "ROLFE",
-  "ROYCE",
-  "SAC",
-  "SEMEL",
-  "SLICHTR",
-  "SMB",
-  "SPROUL",
-  "WGYOUNG",
-  "WOODEN",
-  "YRL"
-];
-
-
-/** Request the distance matrix from json file
-  * and get the duration and distance of each address pair
-  */
-const requestData = function (addrsArr, currentTabID) {
-  // Load `distanceMat.json`
-  fetch('./distanceMat.json')
-    .then(response => response.json())
-    .then((jsonArr) => {
-      // Report exception to GA
-      try {
-        getDuaDis(jsonArr, addrsArr, currentTabID);
-
-        //Test
-        //console.log(returnResult);
-
-      } catch (e) {
-        console.log('****** FATAL: ' + e.message + ' ******');
-        ga('send', 'exception', {
-          'exDescription': 'getDuaDis(jsonArr): ' + e.stack,
-          'exFatal': true
-        });
-      }
-    });
-};
-
 /** Find the index of the address string in the `fullList` */
-const findIndexofFullList = function (addrStr) {
+const findIndexOfFullList = function (addrStr) {
   for (let i = 0; i < fullList.length; i++) {
     if (addrStr.includes(fullList[i])) {
       return i;
@@ -194,8 +41,8 @@ const getDuaDis = function (disMat, addrsArr, currentTabID) {
   let returnResult = [];
 
   for (let i = 0; i < addrsArr.length; i++) {
-    const oriInd = findIndexofFullList(addrsArr[i][0]);
-    const desInd = findIndexofFullList(addrsArr[i][1]);
+    const oriInd = findIndexOfFullList(addrsArr[i][0]);
+    const desInd = findIndexOfFullList(addrsArr[i][1]);
 
     // Google Analytics to find unhit addresses
     if (oriInd === -1) {
@@ -292,7 +139,9 @@ const backGround = function () {
       // Fire the icon when message is recived
       chrome.pageAction.show(currentTabID);
 
-      requestData(addrsArr, currentTabID);
+      // Use the distance matrix from `distanceMat.js`
+      // and get the duration and distance of each address pair
+      getDuaDis(jsonArr, addrsArr, currentTabID);
 
       sendResponse({ 'resp4c': 'addressPair' });
     }

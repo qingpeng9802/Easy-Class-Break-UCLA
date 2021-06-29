@@ -7,10 +7,11 @@
 // [classnumber, classtype, location, id, startTime, endTime, weekday, nextClassInd, gapTime,  walkTime, walkTistance, hurry]
 // [          0,         1,        2,  3,         4,       5,       6,            7,       8,         9,           10,    11]
 
-// used in `getMinDiffAndAddrPairs` & `showTips.js/showInfoButton`
+// used in `getMinDiffAndAddrPairs` &
+// `showTips.js/showInfoButton` & `showTips.js/getButtonPopupNode`
 const [classnumberIndex, classtypeIndex, locationIndex, idIndex] = [0, 1, 2, 3];
-const [startTimeIndex, endTimeIndex, weekdayIndex, nextClassIndIndex, gapTimeIndex] = [4, 5, 6, 7, 8];
-const [walkTimeIndex, walkTistanceIndex, hurryIndex] = [9, 10, 11];
+const [startTimeIndex, endTimeIndex, weekdayIndex, nextClassIndIndex] = [4, 5, 6, 7];
+const [gapTimeIndex, walkTimeIndex, walkTistanceIndex, hurryIndex] = [8, 9, 10, 11];
 
 // Reserve for understanding `boxClasses` array only, not used
 /** The Class that stores the infomation of a class. */

@@ -18,6 +18,10 @@
 
 }
 
+.hurry:link {
+    color: #FFFFFF;
+}
+
 .hurry:visited {
     color: #FFFFFF;
 }
@@ -25,10 +29,13 @@
 .hurry:hover {
     color: #F5FFF5;
     background-color: #AA0F2B;
+    cursor: pointer;
 }
 
-.hurry:link {
-    color: #FFFFFF;
+.hurry:active {
+    color: #F5FFF5;
+    background-color: #AA0F2B;
+    cursor: pointer;
 }
 
 /* Keep `infotab` container always be in the Class Planner box */
@@ -48,7 +55,7 @@
     top: 12px;
     right: -12px;
 
-    width: 218px;
+    width: 220px;
     font-style: normal;
     text-align: left;
 
@@ -72,13 +79,27 @@
 /* Class Name line */
 .classline{
     border-radius: 4px 4px 0px 0px;
-    padding: 8px;
-
-    border-bottom: solid 1px #e0e0e0;
+    padding-top: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 1px;
 
     background-color: #FFFFFF;
     color: #0055A6;
-    font-size: 16px;
+    font-size: 14px !important;
+}
+
+/* Class Location line */
+.locationline{
+    padding-top: 0px;
+    padding-left: 48px;
+    padding-right: 0px;
+    padding-bottom: 4px;
+
+    border-bottom: solid 1px #e0e0e0;
+
+    font-size: 12px !important;
+    color: #000000;
 }
 
 /* Info lines */
@@ -87,9 +108,9 @@
     background-color: #FFFFFF;
     color: #000000;
     padding: 8px;
-    font-size: 13px;
+    font-size: 14px !important;
 }
 
 .infodata{
-    padding-left: 10px;
+    padding-left: 12px;
 }

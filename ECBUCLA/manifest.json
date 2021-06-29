@@ -4,14 +4,14 @@
   "description": "Find out the classes whose break is not enough to walk to the next class.",
   "icons": { "128": "icon.png" },
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["addressList.js", "./background/distanceMat.js", "./background/background.js"],
     "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["https://*.my.ucla.edu/ClassPlanner/*"],
       "css": ["./content_scripts/showTips.css"],
-      "js": ["./content_scripts/jquery-3.6.0.slim.min.js",
+      "js": ["addressList.js", "./content_scripts/jquery-3.6.0.slim.min.js",
              "./content_scripts/getClassInfo.js", "./content_scripts/processClassInfo.js",
              "./content_scripts/showTips.js", "./content_scripts/contentScript.js"]
     }
@@ -24,7 +24,7 @@
   ],
   "page_action": {
     "default_icon": "icon.png",
-    "default_popup": "popup.html"
+    "default_popup": "./popup/popup.html"
 },
   "manifest_version": 2,
   "content_security_policy": "default-src 'self' https://www.google-analytics.com; style-src 'self'; script-src 'self' https://www.google-analytics.com"

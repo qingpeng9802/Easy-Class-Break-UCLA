@@ -18,7 +18,8 @@ const extractBoxClasses = function () {
       //console.log(this.innerHTML);
 
       // Replace <br to \n, and delete <> tags
-      const boxStrsArr = this.innerHTML.replace(/<br/gi, '\n<').replace(/<(.|\n)*?>/gi, '').replace('amp;', '').split('\n');
+      const boxStrsArr = this.innerHTML.replace(/<br/gi, '\n<').replace(/<(.|\n)*?>/gi, '')
+                           .replace('amp;', '').split('\n');
       let trimedBoxStrsArr = boxStrsArr.map(str => str.trim());
       trimedBoxStrsArr[0] = trimedBoxStrsArr[0].toUpperCase();
 
@@ -26,7 +27,10 @@ const extractBoxClasses = function () {
       //console.log(trimedBoxStrsArr);
       //console.log(trimedBoxStrsArr.length);
 
-      if (trimedBoxStrsArr.length === 3 && trimedBoxStrsArr[2] !== undefined && trimedBoxStrsArr[2] !== null && !trimedBoxStrsArr[2].includes('Online')) {
+      if (trimedBoxStrsArr.length === 3 &&
+          trimedBoxStrsArr[2] !== undefined &&
+          trimedBoxStrsArr[2] !== null &&
+          !trimedBoxStrsArr[2].includes('Online')) {
         boxClasses.push(trimedBoxStrsArr);
       } else {
         const errInfo = "Invalid: " + trimedBoxStrsArr.toString();
@@ -54,7 +58,8 @@ const extractPlanClasses = function () {
       // Extract 1st part of the class number
       const startInd1 = $(this).attr('href').indexOf('='); // 67
       const endInd1 = $(this).attr('href').indexOf('&'); // 75
-      let numPart1 = decodeURIComponent($(this).attr('href').slice(startInd1 + 1, endInd1).replace(/\+/g, ' ').trim());
+      let numPart1 = decodeURIComponent($(this).attr('href').slice(startInd1 + 1, endInd1)
+                       .replace(/\+/g, ' ').trim());
 
       // Extract 2nd part of the class number
       const startInd2 = $(this).attr('href').indexOf('=', endInd1); // 88

@@ -3,6 +3,11 @@
 
 'use strict';
 
+// used in `constructSummaryEntry`
+const [classnumberIndex, classtypeIndex, locationIndex, idIndex] = [0, 1, 2, 3];
+const [startTimeIndex, endTimeIndex, weekdayIndex, nextClassIndIndex] = [4, 5, 6, 7];
+const [gapTimeIndex, walkTimeIndex, walkTistanceIndex, hurryIndex] = [8, 9, 10, 11];
+
 // Google Analytics
 window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
 //window.ga_debug = { trace: true };
@@ -141,23 +146,25 @@ const s2min = function (s) { return (s / 60).toFixed(2); };
 const min2s = function (min) { return Math.round(min * 60); };
 
 const constructSummaryEntry = function (currclassArr, nextclassArr) {
-  if (currclassArr[0] === 'invalid' || nextclassArr[0] === 'invalid') {
+  if (currclassArr[classnumberIndex] === 'invalid' || nextclassArr[classnumberIndex] === 'invalid') {
     return 'invalid';
   }
   // The Class Titles
-  const currclassTitle = '<b>&nbsp&nbsp&nbsp&nbsp' + currclassArr[0] + ' ' + currclassArr[1] + ' ' + currclassArr[6] + '</b><br/>';
-  const nextclassTitle = '<b> \u2B62 ' + nextclassArr[0] + ' ' + nextclassArr[1] + ' ' + nextclassArr[6] + '</b>';
+  const currclassTitle = '<b>&nbsp&nbsp&nbsp&nbsp' + currclassArr[classnumberIndex] +
+                         ' ' + currclassArr[classtypeIndex] + ' ' + currclassArr[weekdayIndex] + '</b><br/>';
+  const nextclassTitle = '<b> \u2B62 ' + nextclassArr[classnumberIndex] +
+                         ' ' + nextclassArr[classtypeIndex] + ' ' + nextclassArr[weekdayIndex] + '</b>';
   const classTitle = document.createElement('td');
   classTitle.className = 'classdata';
   classTitle.innerHTML = currclassTitle + nextclassTitle;
 
   // The Class Info
-  const bT = currclassArr[8];
-  const wT = s2min(currclassArr[9]);
-  const rTmin = s2min(min2s(currclassArr[8]) - currclassArr[9]);
-  const rTs = min2s(currclassArr[8]) - currclassArr[9];
-  const dmile = m2mile(currclassArr[10]);
-  const dm = currclassArr[10];
+  const bT = currclassArr[gapTimeIndex];
+  const wT = s2min(currclassArr[walkTimeIndex]);
+  const rTmin = s2min(min2s(currclassArr[gapTimeIndex]) - currclassArr[walkTimeIndex]);
+  const rTs = min2s(currclassArr[gapTimeIndex]) - currclassArr[walkTimeIndex];
+  const dmile = m2mile(currclassArr[walkTistanceIndex]);
+  const dm = currclassArr[walkTistanceIndex];
 
   const summaryEntryStr =
     '<td class=summarydata>' + bT + '</td>' +
@@ -170,7 +177,7 @@ const constructSummaryEntry = function (currclassArr, nextclassArr) {
   summaryEntry.innerHTML = summaryEntryStr;
 
   // If the class is hurry, color is set to be red
-  if (currclassArr[11]) {
+  if (currclassArr[hurryIndex]) {
     summaryEntry.style.color = '#B00020';
   } else {
     classTitle.style.color = '#0055A6';
@@ -185,7 +192,7 @@ const showSummaryTable = function () {
   const summaryTable = document.getElementsByClassName('summarytable')[0];
 
   for (let i = 0; i < finalSummary.length; i++) {
-    if (finalSummary[i][7] == 'none') {
+    if (finalSummary[i][nextClassIndIndex] == 'none') {
       continue;
     }
     const currEntry = constructSummaryEntry(finalSummary[i], finalSummary[finalSummary[i][7]]);

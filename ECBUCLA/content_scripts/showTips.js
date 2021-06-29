@@ -49,16 +49,51 @@ const min2s = function (min) { return Math.round(min * 60); };
   */
 const getButtonPopupNode = function (classArr, nextclassArr, str) {
   // The Class Title
-  const titlelineStr = '<b>' + str + nextclassArr[0] + ' ' + nextclassArr[1] + ' ' + nextclassArr[6] + '</b>';
+  const titlelineStr = '<b>' + str + nextclassArr[classnumberIndex] +
+                       ' ' + nextclassArr[classtypeIndex] + ' ' + nextclassArr[weekdayIndex] + '</b>';
   const classStr = $('<li></li>').html(titlelineStr).attr({ class: 'classline' });
 
+  // The Class Location
+
+  /** Find the exact substring abbreviation of the address string in the `fullListAbbr` */
+  const findSubstrOfFullList = function (addrStr) {
+    let ind = -1;
+    let substr = '';
+    // find the substring index of the address string in the `fullList`
+    for (let i = 0; i < fullList.length; i++) {
+      if (addrStr.includes(fullList[i])) {
+        ind = i;
+        substr = fullList[i];
+      }
+    }
+    // find the corresponding exact substring abbreviation in the `fullListAbbr`
+    if (substr === ''){
+      return ['', ''];
+    }
+    const result = [substr, fullListAbbr[ind]];
+    //Test
+    //console.log(result)
+    return result;
+  };
+
+  let loc = '';
+  const substrAndSubstrabbr = findSubstrOfFullList(nextclassArr[locationIndex]);
+  if (substrAndSubstrabbr[0] !== ''){
+    loc = nextclassArr[locationIndex].replace(substrAndSubstrabbr[0], substrAndSubstrabbr[1]);
+  } else {
+    loc = '';
+  }
+
+  const locationStr = '<div>' + loc + '</div>';
+  const classloactionStr = $('<li></li>').html(locationStr).attr({ class: 'locationline' });
+
   // The Class Info
-  const bT = classArr[8];
-  const wT = s2min(classArr[9]);
-  const rTmin = s2min(min2s(classArr[8]) - classArr[9]);
-  const rTs = min2s(classArr[8]) - classArr[9];
-  const dmile = m2mile(classArr[10]);
-  const dm = classArr[10];
+  const bT = classArr[gapTimeIndex];
+  const wT = s2min(classArr[walkTimeIndex]);
+  const rTmin = s2min(min2s(classArr[gapTimeIndex]) - classArr[walkTimeIndex]);
+  const rTs = min2s(classArr[gapTimeIndex]) - classArr[walkTimeIndex];
+  const dmile = m2mile(classArr[walkTistanceIndex]);
+  const dm = classArr[walkTistanceIndex];
 
   const infoStr =
     '<table>' +
@@ -71,7 +106,7 @@ const getButtonPopupNode = function (classArr, nextclassArr, str) {
 
   // Append `classstr` and `infolist` to `infonode` to control `tabinfo` style
   const infoNode = $('<ul></ul>').attr({ class: 'tabinfo' });
-  infoNode.append(classStr).append(infoList);
+  infoNode.append(classStr).append(classloactionStr).append(infoList);
 
   return infoNode;
 };
@@ -102,7 +137,7 @@ const showInfoButton = function (ind, oriSwitch, destSwitch, boxClasses, planCla
       // Insert the color Button INTO a new <div> node (container)
       // to keep the relative position of the other nodes
       const theWeekday = boxClasses[ind][weekdayIndex];
-      const button = $('<a></a>').html('Ori ' + theWeekday).attr({ class: 'hurry', href: 'javascript:;' });
+      const button = $('<a></a>').html('Ori ' + theWeekday).attr({ class: 'hurry' });
       BPNode.append(button);
 
       // Insert the class info after the Button
@@ -121,7 +156,7 @@ const showInfoButton = function (ind, oriSwitch, destSwitch, boxClasses, planCla
       locationBox.append(BPNode);
 
       const theWeekday = boxClasses[ind][weekdayIndex];
-      const button = $('<a></a>').html('Dest ' + theWeekday).attr({ class: 'hurry', href: 'javascript:;' });
+      const button = $('<a></a>').html('Dest ' + theWeekday).attr({ class: 'hurry' });
       BPNode.append(button);
 
       const desInsertNode = getButtonPopupNode(boxClasses[ind], boxClasses[ind], 'Prev: &nbsp');
@@ -166,7 +201,8 @@ const appendResult = function (oriSwitch, destSwitch, boxClasses, planClasses, t
   return hurryCount;
 };
 
-const processAndShowResult = function (oriSwitch, destSwitch, boxClasses, planClasses, threshold, returnResult) {
+const processAndShowResult = function (oriSwitch, destSwitch,
+                                       boxClasses, planClasses, threshold, returnResult) {
   //Test
   //console.log(boxClasses);
   //console.log(planClasses);
