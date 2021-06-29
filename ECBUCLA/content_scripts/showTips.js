@@ -79,7 +79,7 @@ const getButtonPopupNode = function (classArr, nextclassArr, str) {
 /** Add button and info to the web page of Class Planner */
 const showInfoButton = function (ind, oriSwitch, destSwitch, boxClasses, planClasses) {
   // no show invalid boxClass
-  if (boxClasses[ind][classnumberIndex] === 'invalid' || 
+  if (boxClasses[ind][classnumberIndex] === 'invalid' ||
       boxClasses[boxClasses[ind][nextClassIndIndex]][classnumberIndex] === 'invalid') {
     return;
   }

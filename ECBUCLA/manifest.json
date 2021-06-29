@@ -12,7 +12,7 @@
       "matches": ["https://*.my.ucla.edu/ClassPlanner/*"],
       "css": ["./content_scripts/showTips.css"],
       "js": ["./content_scripts/jquery-3.6.0.slim.min.js",
-             "./content_scripts/getClassInfo.js", "./content_scripts/processClassInfo.js", 
+             "./content_scripts/getClassInfo.js", "./content_scripts/processClassInfo.js",
              "./content_scripts/showTips.js", "./content_scripts/contentScript.js"]
     }
   ],

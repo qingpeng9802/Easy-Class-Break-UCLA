@@ -30,7 +30,7 @@ class ClassInfo {
     * @param {number} walkTime The walking time with unit: s . eg. 132
     * @param {number} walkTistance The walking time with distance: m . eg. 245
     * @param {number} hurry If (gapTime - walkTime) <= threshold eg. 1
-    * 
+    *
     */
     this.classnumber = '';
     this.classtype = '';
@@ -51,7 +51,7 @@ class ClassInfo {
 
 /**
   * Convert time string to minutes from day start.
-  * @param {string} timeStr A time string 
+  * @param {string} timeStr A time string
   * @return The minutes from day start
   */
 const time2Min = function (timeStr) {
@@ -192,7 +192,7 @@ const getMinDiffAndAddrPairs = function (boxClasses) {
 
 
         // move `nextclassInd` to correct class based on the algorithm above
-        while (minDiff(boxClasses[boxEntryInd][endTimeIndex], 
+        while (minDiff(boxClasses[boxEntryInd][endTimeIndex],
                        boxClasses[nextclassInd][startTimeIndex]) < 0) {
           // Check if `nextclassInd` move to the last class of the day
           // in this case, the last class of the day is still tier class, not next classs
@@ -231,7 +231,7 @@ const getMinDiffAndAddrPairs = function (boxClasses) {
           // move `nextclassInd` to find more matches based on the algorithm above
           while (
             nextclassInd + 1 <= lastclassInd &&
-            minDiff(boxClasses[nextclassInd][endTimeIndex], 
+            minDiff(boxClasses[nextclassInd][endTimeIndex],
                     boxClasses[nextclassInd + 1][startTimeIndex]) < 0
           ) {
             nextclassInd = nextclassInd + 1;
@@ -244,10 +244,10 @@ const getMinDiffAndAddrPairs = function (boxClasses) {
             boxClasses[boxClasses.length - 1][nextClassIndIndex] = nextclassInd;
             // Modify `diff` (`boxClasses[-1][-1]`)
             boxClasses[boxClasses.length - 1][gapTimeIndex] =
-              minDiff(boxClasses[boxClasses.length - 1][endTimeIndex], 
+              minDiff(boxClasses[boxClasses.length - 1][endTimeIndex],
                       boxClasses[nextclassInd][startTimeIndex]);
             // push tier class to `addressPairArr`
-            dupAddressPairsArr.push([boxClasses[boxClasses.length - 1][locationIndex], 
+            dupAddressPairsArr.push([boxClasses[boxClasses.length - 1][locationIndex],
                                      boxClasses[nextclassInd][locationIndex]]);
 
             dupCount++;

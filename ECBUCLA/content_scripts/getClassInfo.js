@@ -39,7 +39,7 @@ const extractBoxClasses = function () {
 
   return boxClasses;
 };
-  
+
 /** Extract the class infos from plan */
 const extractPlanClasses = function () {
   // The classes in plan with ID and time
@@ -81,10 +81,10 @@ const extractPlanClasses = function () {
               str = str[1] + str[0].replace(/^0+/, '');
             }
             // if no space
-          } else { 
+          } else {
             str = str.replace(/^0+/, '');
           }
-          
+
         } else {
           str = str.replace(/^0+/, '');
         }
@@ -127,7 +127,7 @@ const extractPlanClasses = function () {
 
   return planClasses;
 };
-  
+
 /** Map the IDs and Times to `BoxClasses` */
 const mapIDTime2BoxClasses = function (boxClasses, planClasses) {
   //Test

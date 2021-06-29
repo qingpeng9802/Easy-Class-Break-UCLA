@@ -199,14 +199,14 @@ const collapsibleSummaryTable = function () {
   const tablecontainer = document.getElementsByClassName('summarytablecontainer')[0];
   const collsign = document.getElementsByClassName('collapsible')[0];
 
-  // recover store state of the summary table 
+  // recover store state of the summary table
   tablecontainer.style.display = foldState;
   tablecontainer.style.maxHeight = height;
   if (foldState == 'block') {
     collsign.classList.toggle("active");
   }
 
-  // control show or hide summary table 
+  // control show or hide summary table
   collsign.addEventListener("click", function () {
     ga('send', 'event', 'collsign', 'click', tablecontainer.style.display);
 
