@@ -173,7 +173,7 @@ const backGround = function () {
     }
     if (req.exceptionOfc !== undefined) {
       ga('send', 'exception', {
-        'exDescription': 'requestDistance(): ' + req.exceptionOfc,
+        'exDescription': 'v0.4.7 requestDistance(): ' + req.exceptionOfc,
         'exFatal': true
       });
       sendResponse({});
