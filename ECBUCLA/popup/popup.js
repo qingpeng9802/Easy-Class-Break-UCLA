@@ -14,6 +14,11 @@ window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga
 ga('create', 'UA-154846897-1', 'auto');
 ga('set', 'checkProtocolTask', function () { });
 ga('send', 'pageview', '/popup.html');
+(function () {
+  let ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = './analytics.js';
+  let s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
 
 // Store the id of timer (must be global)
 let timerId = null;
@@ -115,6 +120,7 @@ const main = function () {
   rangeBox.oninput = function () {
     rangeSlider.value = this.value;
   };
+
   rangeBox.onchange = function () {
     rangeSlider.value = this.value;
     deb_cslSetThr(parseFloat(this.value));
@@ -257,7 +263,7 @@ const initPage = function () {
         'exFatal': true
       });
     }
-
+   
     chrome.storage.local.get(['finalboxClasses'], function (result) {
       if (result.finalboxClasses === undefined) {
         finalSummary = [];

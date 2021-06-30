@@ -3,6 +3,7 @@
 
 'use strict';
 
+/*
 // Google Analytics
 window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments) }; ga.l = +new Date;
 //window.ga_debug = { trace: true };
@@ -14,6 +15,7 @@ ga('send', 'pageview', '/_generated_background_page.html');
   ga.src = 'https://www.google-analytics.com/analytics.js';
   let s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
+*/
 
 /** Find the index of the address string in the `fullList` */
 const findIndexOfFullList = function (addrStr) {
@@ -44,6 +46,7 @@ const getDuaDis = function (disMat, addrsArr, currentTabID) {
     const oriInd = findIndexOfFullList(addrsArr[i][0]);
     const desInd = findIndexOfFullList(addrsArr[i][1]);
 
+    /*
     // Google Analytics to find unhit addresses
     if (oriInd === -1) {
       if (addrsArr[i][0] === 'none') {
@@ -63,6 +66,7 @@ const getDuaDis = function (disMat, addrsArr, currentTabID) {
         'exFatal': false
       });
     } else { }
+    */
 
     if (oriInd === -1 || desInd === -1) {
       returnResult.push([0, 0]);
@@ -122,6 +126,12 @@ let addrsArr = [
 /** Execute the background */
 const backGround = function () {
   chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
+    const addedPayload = {
+      t: 'pageview',
+      dp: '/_generated_background_page.html'
+    };
+    sendAnalyticsEvent(addedPayload);
+    
     //timeBackStart = window.performance.now();
     // Get the addresses pairs from contentscipt.js and request data
     if (req.addressPair !== undefined) {
@@ -136,8 +146,8 @@ const backGround = function () {
 
       // Store the tab ID of my.ucla.edu/ClassPlanner/*
       let currentTabID = sender.tab.id;
-      // Fire the icon when message is recived
-      chrome.pageAction.show(currentTabID);
+      // Change the icon when message is recived
+      chrome.action.setIcon({tabId:currentTabID, path: '../icon.png'});
 
       // Use the distance matrix from `distanceMat.js`
       // and get the duration and distance of each address pair
@@ -150,6 +160,7 @@ const backGround = function () {
 
   // Google Analytics for `contentscript.js`
   chrome.runtime.onMessage.addListener(function (req, sender, sendResponse) {
+    /*
     if (req.mouseoverHurry === 1) {
       ga('send', 'event', 'infoTab', 'mouseover', 'infoTab0');
       sendResponse({});
@@ -178,6 +189,16 @@ const backGround = function () {
       });
       sendResponse({});
     }
+    */
+    if (req.exceptionOfc !== undefined) {
+      const addedPayload = {
+        t: 'exception',
+        exp: 'v0.4.7 mv3 Test requestDistance(): ' + req.exceptionOfc,
+        exf: 1
+      };
+      sendAnalyticsEvent(addedPayload);
+    }
+    
   });
 };
 
