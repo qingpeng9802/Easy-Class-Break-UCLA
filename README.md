@@ -28,7 +28,7 @@ Data Flow:
 
 2. Notice that `getMinDiffAndPairs()` is the core algorithm.  
 
-3. The separated `backgound.js` is designed to meet Google's recommended practice. `backgound.js` is reserved for heavy computing and external API usage.  
+3. The separated `background.js` is designed to meet Google's recommended practice. `background.js` is reserved for heavy computing and external API usage.  
 
 4. `chrome.tabs.sendMessage()` make sure the behavior between tabs is correct. Be careful with the message passing.  
 
