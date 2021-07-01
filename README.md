@@ -32,7 +32,7 @@ Data Flow:
 
 4. `chrome.tabs.sendMessage()` make sure the behavior between tabs is correct. Be careful with the message passing.  
 
-5. Save and recover the context paradigm is very important in `contentScript.js`, especially in Manifest v3, the backgound become service worker.  
+5. The paradigm of context save/restore is very important in `contentScript.js`, especially in Manifest v3 since the background become service worker.  
 
 6. Use MutationObserver to detect a mutaion and re-run `contentScript()`.  
   
